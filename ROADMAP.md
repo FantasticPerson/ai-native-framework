@@ -10,17 +10,20 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 
 - **RFC 0001**：定位、差异化对比（vs 浏览器 Agent / MCP / ARIA）、三层接入光谱、架构分层、目标/非目标、五阶段里程碑。已评审定稿。
 - **项目地基**：`git init`、`.gitignore`、`CLAUDE.md`（框架特有规范）、`ROADMAP.md`。
+- **选型**：monorepo 用 pnpm workspace，包构建用 tsup（均已在 core 包验证）。
+- **workspace 骨架**：根 `pnpm-workspace.yaml` + `tsconfig.base.json` + `package.json`，`pnpm install` 通过。
+- **`@ai-native/core`（首个包）**：抽取 `parsePlan` 白名单校验 + 公共类型（Manifest/Step/AIPlan），零 DOM/React 依赖。7 项单测通过，tsup 产出 ESM + d.ts。
 
 ## 进行中
 
-- 无。等待启动阶段 1。
+- 无。core 首块完成，待继续抽 executor。
 
 ## 待办（阶段 1：React 库自用）
 
 从 `../ai-native-demo` 抽取可 npm 安装的 React 库：
 
-- [ ] 定 monorepo 工具（pnpm workspace / turborepo，阶段 1 初评估）
-- [ ] `@ai-native/core`：抽取 `parsePlan` 白名单校验 + executor + 虚拟光标（需剥离 react-router 依赖）
+- [x] 定 monorepo 工具 → pnpm workspace + tsup
+- [~] `@ai-native/core`：已抽 `parsePlan` + 类型；**待抽** executor + 虚拟光标（需设计 adapter 接口剥离 react-router）
 - [ ] `@ai-native/scanner`：抽取并泛化 AST 扫描 + manifest 生成
 - [ ] `@ai-native/react`：AIBar 组件 + useAIAgent hook + router 桥接
 - [ ] `@ai-native/preset-react-router`：第一个 preset，扫路由得模块清单

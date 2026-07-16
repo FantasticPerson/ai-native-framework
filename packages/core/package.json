@@ -1,0 +1,20 @@
+{
+  "name": "@ai-native/core",
+  "version": "0.0.0",
+  "description": "框架无关的运行时：能力清单类型、LLM 输出解析与白名单校验",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "test": "vitest run"
+  }
+}

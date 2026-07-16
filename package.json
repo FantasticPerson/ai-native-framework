@@ -1,0 +1,20 @@
+{
+  "name": "ai-native-framework",
+  "version": "0.0.0",
+  "private": true,
+  "description": "让你自己的前端应用获得高准确率、可见可控的 AI 操作能力",
+  "type": "module",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.1"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "pnpm@10.32.1"
+}
