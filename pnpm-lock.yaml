@@ -76,6 +76,31 @@ importers:
         specifier: ^29.1.1
         version: 29.1.1
 
+  packages/preset-antd:
+    dependencies:
+      '@ai-native/core':
+        specifier: workspace:*
+        version: link:../core
+      '@ai-native/scanner':
+        specifier: workspace:*
+        version: link:../scanner
+      '@babel/parser':
+        specifier: ^7.25.6
+        version: 7.29.7
+      '@babel/traverse':
+        specifier: ^7.25.6
+        version: 7.29.7
+      '@babel/types':
+        specifier: ^7.25.6
+        version: 7.29.7
+    devDependencies:
+      '@types/babel__traverse':
+        specifier: ^7.28.0
+        version: 7.28.0
+      '@types/node':
+        specifier: ^20.19.43
+        version: 20.19.43
+
   packages/preset-react-router:
     dependencies:
       '@ai-native/core':

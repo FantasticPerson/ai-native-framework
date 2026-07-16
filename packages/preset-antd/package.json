@@ -1,0 +1,33 @@
+{
+  "name": "@ai-native/preset-antd",
+  "version": "0.0.0",
+  "description": "自动推断预设：从 antd <Form.Item> 静态推断字段清单（名称/标签/类型/选项）",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@ai-native/core": "workspace:*",
+    "@ai-native/scanner": "workspace:*",
+    "@babel/parser": "^7.25.6",
+    "@babel/traverse": "^7.25.6",
+    "@babel/types": "^7.25.6"
+  },
+  "devDependencies": {
+    "@types/babel__traverse": "^7.28.0",
+    "@types/node": "^20.19.43"
+  }
+}
