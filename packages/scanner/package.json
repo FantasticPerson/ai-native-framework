@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@types/babel__traverse": "^7.28.0",
-    "@types/node": "^26.1.1",
-    "vite": "^8.1.4"
+    "@types/node": "^20.19.43",
+    "vite": "^5.4.8"
   }
 }

@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+.DS_Store
+.vscode/
+.idea/
+src/ai-manifest.json
+# tsc -b 可能产生的编译产物（源码目录不应出现 .js/.d.ts）
+vite.config.js
+vite.config.d.ts
+scripts/**/*.js
+scripts/**/*.d.ts
+server/**/*.js
+server/**/*.d.ts
+*.tsbuildinfo

@@ -17,10 +17,11 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 - **core provider + prompt**：LLMProvider 接口 + createHttpProvider（只做 http 默认实现，防未来破坏性变更）+ buildSystemPrompt。16 项单测通过。
 - **`@ai-native/react`**：reactSetFieldValue（受控组件填值）+ useAIAgent hook（manifest/provider 注入）+ 通用 AIBar（业务示例改 props）。2 项单测通过，tsup 构建通过。
 - **`@ai-native/scanner`**：scanSource + aggregate（纯逻辑，复用 core 类型）+ 参数化 vite 插件（modulesDir/output/extensions）。12 项单测通过，双入口构建通过。
+- **端到端反向验证（构建级）**：demo 拷入 `examples/ai-native-demo`，纳入 workspace，改用 `workspace:*` 引用三个框架包。删除全部被替代的旧代码（src/ai/steps·executor·cursor·prompt·useAIAgent、scripts/ai-scanner），改用框架的 useAIAgent + AIBar + createHttpProvider + scanner vite 插件。`tsc -b && vite build` 通过，scanner 插件生成 4 模块 manifest。
 
 ## 进行中
 
-- 无。三核心包（core/react/scanner）就位，合计 30 项测试通过，待端到端反向验证。
+- 无。阶段 1 核心目标（React 库自用）构建级已达成，待浏览器运行时验证。
 
 ## 待办（阶段 1：React 库自用）
 
@@ -30,7 +31,8 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 - [x] `@ai-native/core`：parsePlan + 类型 + executor + presenter + provider + prompt
 - [x] `@ai-native/react`：React adapter + useAIAgent hook + AIBar
 - [x] `@ai-native/scanner`：scanSource + aggregate + 参数化 vite 插件
-- [ ] 用 `ai-native-demo` 作为首个使用者，验证手动标注链路端到端跑通
+- [x] 用 `ai-native-demo` 作为首个使用者，构建级端到端验证通过（examples/ai-native-demo）
+- [ ] **浏览器运行时验证（需人工 + 有效 DeepSeek key）**：`cd examples/ai-native-demo && npm run dev`，逐条验收「提请假 / 新增员工 / 报销筛选 / 审批 / 切换视图」+ 光标演出
 - [ ] `@ai-native/preset-react-router`：第一个 preset，扫路由得模块清单（阶段 2 自动推断）
 - [ ] 安全模型基本设计：危险操作（删除/提交）二次确认机制
 
