@@ -3,13 +3,14 @@ import { execute } from './executor';
 import type { FrameworkAdapter } from './adapter';
 import type { AIPlan } from './types';
 
-// 测试用 adapter：记录 navigate 调用，setFieldValue 直接写 el.value
+// 测试用 adapter：记录 navigate 调用并真正切换 URL（贴近 react-router），setFieldValue 直接写 el.value
 function mockAdapter(): FrameworkAdapter & { navigated: string[] } {
   const navigated: string[] = [];
   return {
     navigated,
     navigate(route) {
       navigated.push(route);
+      history.pushState({}, '', route);
     },
     setFieldValue(el, value) {
       (el as HTMLInputElement).value = value;
@@ -22,6 +23,7 @@ const routeOf = (m: string) => (m === 'leave' ? '/leave' : undefined);
 
 beforeEach(() => {
   document.body.innerHTML = '';
+  history.pushState({}, '', '/');
 });
 
 describe('execute', () => {
@@ -35,6 +37,17 @@ describe('execute', () => {
 
     expect(result.ok).toBe(true);
     expect(adapter.navigated).toEqual(['/leave']);
+  });
+
+  it('navigate：无 data-ai-module 容器时，靠路由到达判定就绪（零改动接入）', async () => {
+    const adapter = mockAdapter();
+    // 页面上没有任何 data-ai-module 容器（模块清单来自扫路由，组件根节点是朴素 div）
+    const plan: AIPlan = { narration: '', steps: [{ type: 'navigate', module: 'leave' }] };
+
+    const result = await execute(plan, { adapter, routeOf, stepDelay: 0, navigateTimeout: 200 });
+
+    expect(result.ok).toBe(true);
+    expect(location.pathname).toBe('/leave');
   });
 
   it('click：定位 data-ai-action 并触发点击', async () => {

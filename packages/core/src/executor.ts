@@ -45,6 +45,21 @@ async function waitFor(selector: string, timeout: number): Promise<Element | nul
   return document.querySelector(selector);
 }
 
+/**
+ * 轮询等待导航就绪：模块容器 [data-ai-module] 出现，或路由已切到目标 route。
+ * 两个信号任一满足即就绪——手标模式认容器，零改动（扫路由）模式认路由，都覆盖。
+ */
+async function waitForNavigated(module: string, route: string, timeout: number): Promise<boolean> {
+  const ready = () =>
+    Boolean(document.querySelector(`[data-ai-module="${module}"]`)) || location.pathname === route;
+  const start = performance.now();
+  while (performance.now() - start < timeout) {
+    if (ready()) return true;
+    await delay(30);
+  }
+  return ready();
+}
+
 /** 逐字打字填入；有 presenter 时带动画延时，headless 时一次到位 */
 async function typeInto(
   el: Element,
@@ -80,7 +95,7 @@ async function runStep(
     if (!route) return { ok: false, reason: `未知模块 ${step.module}` };
     opts.onNarrate?.(`正在前往「${step.module}」`);
     adapter.navigate(route);
-    const appeared = await waitFor(`[data-ai-module="${step.module}"]`, opts.navigateTimeout ?? 3000);
+    const appeared = await waitForNavigated(step.module, route, opts.navigateTimeout ?? 3000);
     if (!appeared) return { ok: false, reason: `导航到 ${step.module} 后页面未就绪` };
     if (stepDelay) await delay(stepDelay);
     return { ok: true };
