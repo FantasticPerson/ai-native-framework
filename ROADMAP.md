@@ -14,21 +14,23 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 - **workspace 骨架**：根 `pnpm-workspace.yaml` + `tsconfig.base.json` + `package.json`，`pnpm install` 通过。
 - **`@ai-native/core`（首个包）**：抽取 `parsePlan` 白名单校验 + 公共类型（Manifest/Step/AIPlan），零 DOM/React 依赖。7 项单测通过，tsup 产出 ESM + d.ts。
 - **core 执行层**：adapter 接口（方案 A：仅 navigate + setFieldValue）+ 可选 presenter（支持 headless，为 MCP server 铺路）+ executor + 内置 domPresenter。14 项单测通过。
+- **core provider + prompt**：LLMProvider 接口 + createHttpProvider（只做 http 默认实现，防未来破坏性变更）+ buildSystemPrompt。16 项单测通过。
+- **`@ai-native/react`**：reactSetFieldValue（受控组件填值）+ useAIAgent hook（manifest/provider 注入）+ 通用 AIBar（业务示例改 props）。2 项单测通过，tsup 构建通过。
 
 ## 进行中
 
-- 无。core 内核（解析校验 + 执行编排）已成型，待做 React 适配包。
+- 无。core + react 已成型，待做 scanner，然后端到端反向验证。
 
 ## 待办（阶段 1：React 库自用）
 
 从 `../ai-native-demo` 抽取可 npm 安装的 React 库：
 
 - [x] 定 monorepo 工具 → pnpm workspace + tsup
-- [x] `@ai-native/core`：parsePlan + 类型 + executor + presenter（adapter 剥离 react-router 完成）
+- [x] `@ai-native/core`：parsePlan + 类型 + executor + presenter + provider + prompt
+- [x] `@ai-native/react`：React adapter + useAIAgent hook + AIBar
 - [ ] `@ai-native/scanner`：抽取并泛化 AST 扫描 + manifest 生成
-- [ ] `@ai-native/react`：React adapter（setFieldValue）+ AIBar 组件 + useAIAgent hook + router 桥接
-- [ ] `@ai-native/preset-react-router`：第一个 preset，扫路由得模块清单
 - [ ] 用 `ai-native-demo` 作为首个使用者，验证手动标注链路端到端跑通
+- [ ] `@ai-native/preset-react-router`：第一个 preset，扫路由得模块清单（阶段 2 自动推断）
 - [ ] 安全模型基本设计：危险操作（删除/提交）二次确认机制
 
 ## 后续阶段（详见 RFC §7）
