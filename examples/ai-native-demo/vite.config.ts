@@ -41,7 +41,11 @@ export default defineConfig(({ mode }) => {
             },
           }),
           antdPreset({
-            forms: [{ module: 'leave', file: 'src/modules/leave/LeaveForm.tsx' }],
+            forms: [
+              { module: 'leave', file: 'src/modules/leave/LeaveForm.tsx' },
+              { module: 'employees', file: 'src/modules/employees/EmployeeForm.tsx' },
+              { module: 'expense', file: 'src/modules/expense/ExpenseForm.tsx' },
+            ],
           }),
         ],
       }),

@@ -1,6 +1,6 @@
 import { useState } from 'react';
+import { Form, Input, Select } from 'antd';
 import { Modal } from '../../components/Modal';
-import { Field } from '../../components/Field';
 import { useEmployeeStore, type Employee } from './employees.store';
 
 interface Props {
@@ -46,10 +46,30 @@ export function EmployeeForm({ open, editing, onClose }: Props) {
         </>
       }
     >
-      <Field aiField="employees.name" aiLabel="姓名" type="text" value={form.name} onChange={set('name')} />
-      <Field aiField="employees.dept" aiLabel="部门" type="select" options={['技术', '产品', '运营', '市场', '人事']} value={form.dept} onChange={set('dept')} />
-      <Field aiField="employees.title" aiLabel="职位" type="text" value={form.title} onChange={set('title')} />
-      <Field aiField="employees.phone" aiLabel="手机号" type="text" value={form.phone} onChange={set('phone')} />
+      <Form layout="vertical">
+        <Form.Item name="name" label="姓名">
+          <Input value={form.name} onChange={(e) => set('name')(e.target.value)} />
+        </Form.Item>
+        <Form.Item name="dept" label="部门">
+          <Select
+            value={form.dept || undefined}
+            onChange={set('dept')}
+            options={[
+              { value: '技术', label: '技术' },
+              { value: '产品', label: '产品' },
+              { value: '运营', label: '运营' },
+              { value: '市场', label: '市场' },
+              { value: '人事', label: '人事' },
+            ]}
+          />
+        </Form.Item>
+        <Form.Item name="title" label="职位">
+          <Input value={form.title} onChange={(e) => set('title')(e.target.value)} />
+        </Form.Item>
+        <Form.Item name="phone" label="手机号">
+          <Input value={form.phone} onChange={(e) => set('phone')(e.target.value)} />
+        </Form.Item>
+      </Form>
     </Modal>
   );
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
+import { Form, Input, InputNumber, DatePicker, Select } from 'antd';
 import { Modal } from '../../components/Modal';
-import { Field } from '../../components/Field';
 import { useExpenseStore } from './expense.store';
 
 interface Props {
@@ -43,10 +43,37 @@ export function ExpenseForm({ open, onClose }: Props) {
         </>
       }
     >
-      <Field aiField="expense.category" aiLabel="报销类别" type="select" options={['差旅', '餐饮', '办公', '其他']} value={form.category} onChange={set('category')} />
-      <Field aiField="expense.amount" aiLabel="报销金额" type="number" value={form.amount} onChange={set('amount')} />
-      <Field aiField="expense.date" aiLabel="发生日期" type="date" value={form.date} onChange={set('date')} />
-      <Field aiField="expense.note" aiLabel="备注说明" type="text" value={form.note} onChange={set('note')} />
+      <Form layout="vertical">
+        <Form.Item name="category" label="报销类别">
+          <Select
+            value={form.category || undefined}
+            onChange={set('category')}
+            options={[
+              { value: '差旅', label: '差旅' },
+              { value: '餐饮', label: '餐饮' },
+              { value: '办公', label: '办公' },
+              { value: '其他', label: '其他' },
+            ]}
+          />
+        </Form.Item>
+        <Form.Item name="amount" label="报销金额">
+          <InputNumber
+            value={form.amount || undefined}
+            onChange={(v) => set('amount')(v == null ? '' : String(v))}
+            style={{ width: '100%' }}
+          />
+        </Form.Item>
+        <Form.Item name="date" label="发生日期">
+          <DatePicker
+            value={undefined}
+            onChange={(_, ds) => set('date')(Array.isArray(ds) ? ds[0] : ds)}
+            style={{ width: '100%' }}
+          />
+        </Form.Item>
+        <Form.Item name="note" label="备注说明">
+          <Input value={form.note} onChange={(e) => set('note')(e.target.value)} />
+        </Form.Item>
+      </Form>
     </Modal>
   );
 }

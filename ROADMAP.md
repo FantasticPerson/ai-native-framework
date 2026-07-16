@@ -41,7 +41,7 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 - [x] 安全模型基本设计：危险操作（删除/审批/驳回）二次确认机制，demo 标注验证通过
 - [x] `@ai-native/preset-antd`：扫 antd `<Form.Item>` 推断字段清单 + `/runtime` 运行时字段适配器，demo leave 模块接入真实 antd 验证（构建级）
 - [ ] **浏览器运行时验证（需人工 + 有效 DeepSeek key）**：`cd examples/ai-native-demo && npm run dev`，逐条验收「提请假 / 新增员工 / 报销筛选 / 审批 / 切换视图」+ 光标演出 + 危险操作弹确认 + **antd 控件填值（reason/days 原生、type Select 点选、date DatePicker）**
-- [ ] 将 antd 接入从 leave 单模块推广到其余模块（employees/expense 等），验证 preset-antd 泛化性
+- [x] 将 antd 接入从 leave 推广到 employees/expense 三个表单模块，preset-antd 泛化性验证通过（构建级）：三模块字段清单齐全（含 Select options / InputNumber / DatePicker），antd 表单字段（preset 种子）与 Module 手标字段 `employees.keyword`·`expense.filterCategory` 正确合并互不覆盖
 
 ## 技术债
 
@@ -49,6 +49,7 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 - vite 插件 dev watch 只监听 `modulesDir`，改路由文件（如 `src/App.tsx`）不会触发 manifest 重扫，需重启 dev server。构建（`buildStart`）与 dev 启动时都会重新收集 preset，不影响生产产物；后续可让 preset 声明关注的文件路径。
 - `reactRouterPreset` 仅支持 JSX 式 `<Routes>/<Route>`，数据式 `createBrowserRouter([...])` 暂不支持（诚实边界，见 RFC §4）。
 - demo 构建脚本 `tsc -b && vite build`：tsc 先跑，会读到上一轮的旧 `ai-manifest.json`（vite 插件才重扫生成）。当 manifest 结构变动时可能读到过期内容；目前靠 vite 阶段重新生成兜底，后续可让 tsc 不依赖 manifest 或调整脚本顺序。
+- `src/components/Field.tsx`：三个表单 antd 化后已无人引用，刻意保留作为「接入光谱最底层——手动精标 data-ai-field 写法」的对照样例（非死代码，展示用）。
 
 ## 后续阶段（详见 RFC §7）
 
