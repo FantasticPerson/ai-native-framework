@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, writeFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import type { Plugin } from 'vite';
 import { aggregate, type SourceFile } from './aggregate';
-import type { Preset } from './preset';
+import type { Preset, PresetContribution } from './preset';
 
 export interface AIScannerOptions {
   /** 扫描根目录，相对 cwd，默认 'src/modules' */
@@ -37,8 +37,14 @@ function collectFiles(dir: string, extensions: string[]): SourceFile[] {
 /** 扫描指定目录下的 data-ai-* 标注，生成 manifest JSON 文件，返回模块数。 */
 export function generateManifest(opts: Required<AIScannerOptions>): number {
   const files = collectFiles(resolve(process.cwd(), opts.modulesDir), opts.extensions);
-  const moduleSeeds = opts.presets.flatMap((p) => p.collect());
-  const manifest = aggregate(files, { moduleSeeds });
+  const contribution: PresetContribution = { modules: [], fields: [], actions: [] };
+  for (const p of opts.presets) {
+    const c = p.collect();
+    if (c.modules) contribution.modules!.push(...c.modules);
+    if (c.fields) contribution.fields!.push(...c.fields);
+    if (c.actions) contribution.actions!.push(...c.actions);
+  }
+  const manifest = aggregate(files, { contribution });
   writeFileSync(resolve(process.cwd(), opts.output), JSON.stringify(manifest, null, 2) + '\n', 'utf-8');
   return Object.keys(manifest.modules).length;
 }

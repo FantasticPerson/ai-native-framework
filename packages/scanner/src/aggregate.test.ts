@@ -64,20 +64,20 @@ describe('aggregate', () => {
     expect(m.modules.leave.actions.filter((a) => a.id === 'leave.create')).toHaveLength(1);
   });
 
-  describe('moduleSeeds（preset 自动推断）', () => {
-    it('种子建模块，actions/fields 按 id 前缀挂到种子模块上', () => {
+  describe('preset 种子（自动推断）', () => {
+    it('模块种子建模块，actions/fields 按 id 前缀挂到种子模块上', () => {
       const files = [
         { path: 'a.tsx', code: `const A = () => <button data-ai-action="leave.submit" data-ai-label="提交" />;` },
       ];
       const m = aggregate(files, {
-        moduleSeeds: [{ name: 'leave', label: '请假管理', route: '/leave' }],
+        contribution: { modules: [{ name: 'leave', label: '请假管理', route: '/leave' }] },
       });
       expect(m.modules.leave).toMatchObject({ label: '请假管理', route: '/leave' });
       expect(m.modules.leave.actions).toContainEqual({ id: 'leave.submit', label: '提交' });
     });
 
-    it('种子缺 label 时回退到 name', () => {
-      const m = aggregate([], { moduleSeeds: [{ name: 'leave', route: '/leave' }] });
+    it('模块种子缺 label 时回退到 name', () => {
+      const m = aggregate([], { contribution: { modules: [{ name: 'leave', route: '/leave' }] } });
       expect(m.modules.leave.label).toBe('leave');
     });
 
@@ -89,10 +89,47 @@ describe('aggregate', () => {
         },
       ];
       const m = aggregate(files, {
-        moduleSeeds: [{ name: 'leave', label: '路由推断名', route: '/leave' }],
+        contribution: { modules: [{ name: 'leave', label: '路由推断名', route: '/leave' }] },
       });
       expect(m.modules.leave.label).toBe('请假管理（精标）');
       expect(m.modules.leave.route).toBe('/leave-v2');
+    });
+
+    it('字段种子按 id 前缀挂到对应模块', () => {
+      const m = aggregate([], {
+        contribution: {
+          modules: [{ name: 'leave', label: '请假管理', route: '/leave' }],
+          fields: [{ id: 'leave.days', label: '请假天数', type: 'number' }],
+        },
+      });
+      expect(m.modules.leave.fields).toContainEqual({ id: 'leave.days', label: '请假天数', type: 'number' });
+    });
+
+    it('data-ai-field 手标覆盖同 id 的字段种子', () => {
+      const files = [
+        {
+          path: 'a.tsx',
+          code: `const A = () => <input data-ai-field="leave.days" data-ai-label="天数（精标）" data-ai-type="number" />;`,
+        },
+      ];
+      const m = aggregate(files, {
+        contribution: {
+          modules: [{ name: 'leave', label: '请假管理', route: '/leave' }],
+          fields: [{ id: 'leave.days', label: '天数（推断）', type: 'text' }],
+        },
+      });
+      const field = m.modules.leave.fields.find((f) => f.id === 'leave.days');
+      expect(field).toEqual({ id: 'leave.days', label: '天数（精标）', type: 'number' });
+    });
+
+    it('操作种子按 id 前缀挂到对应模块', () => {
+      const m = aggregate([], {
+        contribution: {
+          modules: [{ name: 'leave', label: '请假管理', route: '/leave' }],
+          actions: [{ id: 'leave.submit', label: '提交' }],
+        },
+      });
+      expect(m.modules.leave.actions).toContainEqual({ id: 'leave.submit', label: '提交' });
     });
   });
 });

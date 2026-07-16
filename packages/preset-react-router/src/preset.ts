@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import type { ModuleDef } from '@ai-native/core';
-import type { Preset } from '@ai-native/scanner';
+import type { Preset, PresetContribution } from '@ai-native/scanner';
 import { scanRoutes } from './scan-routes';
 
 export interface ReactRouterPresetOptions {
@@ -22,19 +21,21 @@ export interface ReactRouterPresetOptions {
 export function reactRouterPreset(options: ReactRouterPresetOptions): Preset {
   return {
     name: 'react-router',
-    collect(): ModuleDef[] {
+    collect(): PresetContribution {
       let code: string;
       try {
         code = readFileSync(resolve(process.cwd(), options.routesFile), 'utf-8');
       } catch {
-        return [];
+        return {};
       }
       const labels = options.labels ?? {};
-      return scanRoutes(code).map((m) => ({
-        name: m.name,
-        route: m.route,
-        label: labels[m.route],
-      }));
+      return {
+        modules: scanRoutes(code).map((m) => ({
+          name: m.name,
+          route: m.route,
+          label: labels[m.route],
+        })),
+      };
     },
   };
 }
