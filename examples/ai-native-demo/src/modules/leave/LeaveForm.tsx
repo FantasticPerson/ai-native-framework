@@ -10,6 +10,8 @@ interface Props {
 
 const empty = { type: '', days: '', date: '', reason: '' };
 
+const LEAVE_TYPES = ['事假', '病假', '年假', '调休'];
+
 export function LeaveForm({ open, onClose }: Props) {
   const { add } = useLeaveStore();
   const [form, setForm] = useState(empty);
@@ -48,12 +50,7 @@ export function LeaveForm({ open, onClose }: Props) {
           <Select
             value={form.type || undefined}
             onChange={set('type')}
-            options={[
-              { value: '事假', label: '事假' },
-              { value: '病假', label: '病假' },
-              { value: '年假', label: '年假' },
-              { value: '调休', label: '调休' },
-            ]}
+            options={LEAVE_TYPES.map((v) => ({ value: v, label: v }))}
           />
         </Form.Item>
         <Form.Item name="days" label="请假天数">

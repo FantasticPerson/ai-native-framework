@@ -65,4 +65,55 @@ describe('scanFormItems', () => {
   it('解析失败返回空数组', () => {
     expect(scanFormItems('= = =')).toEqual([]);
   });
+
+  describe('从同文件常量解析 options（动态表单）', () => {
+    it('options 引用字符串数组常量', () => {
+      const code = `const TYPES = ['事假','病假'];
+        function F(){ return <Form.Item name="type" label="类型"><Select options={TYPES} /></Form.Item>; }`;
+      expect(scanFormItems(code)).toContainEqual({
+        name: 'type',
+        label: '类型',
+        type: 'select',
+        options: ['事假', '病假'],
+      });
+    });
+
+    it('options 引用对象数组常量，取 value', () => {
+      const code = `const OPTS = [{value:'a',label:'A'},{value:'b',label:'B'}];
+        function F(){ return <Form.Item name="k" label="K"><Select options={OPTS} /></Form.Item>; }`;
+      expect(scanFormItems(code)).toContainEqual({
+        name: 'k',
+        label: 'K',
+        type: 'select',
+        options: ['a', 'b'],
+      });
+    });
+
+    it('options 用常量 .map(v => ({value:v}))', () => {
+      const code = `const TYPES = ['事假','病假','年假'];
+        function F(){ return <Form.Item name="type" label="类型"><Select options={TYPES.map(v=>({value:v,label:v}))} /></Form.Item>; }`;
+      expect(scanFormItems(code)).toContainEqual({
+        name: 'type',
+        label: '类型',
+        type: 'select',
+        options: ['事假', '病假', '年假'],
+      });
+    });
+
+    it('options 用内联数组 .map(...)（回归，不破坏）', () => {
+      const code = `<Form.Item name="cat" label="类别"><Select options={['差旅','餐饮'].map(v=>({value:v,label:v}))} /></Form.Item>;`;
+      expect(scanFormItems(code)).toContainEqual({
+        name: 'cat',
+        label: '类别',
+        type: 'select',
+        options: ['差旅', '餐饮'],
+      });
+    });
+
+    it('引用未定义的标识符：options 缺省，type 仍 select', () => {
+      const code = `<Form.Item name="x" label="X"><Select options={UNKNOWN} /></Form.Item>;`;
+      const result = scanFormItems(code);
+      expect(result).toContainEqual({ name: 'x', label: 'X', type: 'select' });
+    });
+  });
 });
