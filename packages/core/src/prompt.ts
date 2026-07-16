@@ -1,4 +1,4 @@
-import type { Manifest } from './types';
+import type { Manifest, AIPlan, Step } from './types';
 
 /** 把能力清单压缩成给模型看的文本 */
 function renderManifest(m: Manifest): string {
@@ -53,4 +53,57 @@ ${renderManifest(manifest)}
 6. 如果用户的指令无法用清单里的能力完成，返回空 steps 数组，并在 narration 中说明原因。
 7. 只做用户要求的操作，不要多做。
 8. 标注「危险操作」的步骤，系统会在执行前请用户二次确认；你仍可正常编排，无需回避。`;
+}
+
+/** 把一个 step 渲染成人类可读的一行，供反馈文本引用 */
+function describeStep(step: Step): string {
+  switch (step.type) {
+    case 'navigate':
+      return `navigate → 模块 ${step.module}`;
+    case 'click':
+      return `click → ${step.target}`;
+    case 'fill':
+      return `fill → ${step.target} = "${step.value}"`;
+    case 'wait':
+      return `wait ${step.ms ?? 300}ms`;
+  }
+}
+
+/** 执行反馈所需的最小失败信息（ExecuteResult 的子集，避免 prompt 依赖 executor） */
+export interface RetryContext {
+  ok: boolean;
+  stoppedAt?: number;
+  reason?: string;
+  kind?: string;
+}
+
+/**
+ * 构造回流给 LLM 的执行反馈文本，用于失败后重规划。
+ * 不重复 manifest（已在 system prompt 里），只给「原指令 + 上次计划 + 失败点 + 已成功步骤」。
+ */
+export function buildRetryFeedback(userText: string, lastPlan: AIPlan, result: RetryContext): string {
+  const lines: string[] = [];
+  lines.push(`我按你上一次的计划执行，但没有完成。请修正后重新输出完整的 JSON 计划。`);
+  lines.push('');
+  lines.push(`用户的原始指令：${userText}`);
+  lines.push('');
+
+  if (typeof result.stoppedAt === 'number' && lastPlan.steps.length > 0) {
+    const done = lastPlan.steps.slice(0, result.stoppedAt);
+    if (done.length) {
+      lines.push('已成功完成的步骤（无需重复执行）：');
+      done.forEach((s, i) => lines.push(`  ${i + 1}. ${describeStep(s)}`));
+    }
+    const failed = lastPlan.steps[result.stoppedAt];
+    if (failed) {
+      lines.push('');
+      lines.push(`失败在第 ${result.stoppedAt + 1} 步：${describeStep(failed)}`);
+    }
+  }
+
+  lines.push('');
+  lines.push(`失败原因：${result.reason ?? '未知'}`);
+  lines.push('');
+  lines.push('请重新输出一个完整的计划（从头开始的 steps，系统会重新执行）。如果这个目标本身无法用能力清单完成，返回空 steps 并在 narration 说明。');
+  return lines.join('\n');
 }

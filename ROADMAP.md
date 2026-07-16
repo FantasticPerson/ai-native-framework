@@ -22,11 +22,12 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 - **preset 反向验证（零改动接入）**：demo 删除 4 个模块组件根节点的 `data-ai-module/label/route` 手标（根节点变回朴素 `<div>`），改由 `reactRouterPreset` 扫 `App.tsx` 路由 + 一处 `labels` 配置推断模块清单。重新构建后生成的 manifest 与手标基线**内容字节级等价**（仅模块键序改为跟随路由声明顺序）。证明「自动推断 + 配置补漏」两层光谱可替代散落手标。
 - **安全模型基本设计（危险操作二次确认）**：危险性作为操作固有属性声明在能力清单（`ManifestAction.confirm`），编译期确定。数据流：`data-ai-confirm` 标注 → scanner 填 `confirm:true` → executor 在 click 前经 `confirm` 回调二次确认，拒绝则优雅中断。机制/策略分离——core 只定义「要不要问」（`actionOf` + `confirm` 回调，缺省即放行，headless 可用），react 默认 `window.confirm` 兜底并暴露 `onConfirm` 让宿主弹自定义 Modal；prompt 标注危险操作让 LLM 知情但闸门在 executor。默认全放行，只拦显式标注的操作（方案 A：诚实、不打扰）。demo 给删除员工/审批/驳回请假三个操作标注验证。core 22 + react 2 + scanner 17 + preset 10 = 51 单测通过。
 - **`@ai-native/preset-antd`（自动推断第二层：字段）**：构建时 `scanFormItems` 静态解析 antd `<Form.Item name label>`，从子控件推断字段类型（Input→text / InputNumber→number / DatePicker→date / Select→select）与 Select 选项（内联字面量数组或 `<Option>` 子元素，`.map()` 动态生成扫不到——诚实边界）。`antdPreset({forms})` 产出字段种子。
-- **antd 运行时字段适配（封装进 preset-antd/runtime）**：抉择——不自建 UI 框架（会杀死「适配既有应用」定位），而把 antd 非原生控件的「定位 + 填值」脏活封装进独立浏览器子包 `@ai-native/preset-antd/runtime`（与构建时扫描分离，依赖集不同）。core 侧最小外置两个钩子（`ExecuteOptions.locateField` 覆盖默认 `data-ai-field` 定位；`FrameworkAdapter.setFieldValue` 放宽为可返回 Promise 并 await），并让 `typeInto` 对 readonly/combobox 一次性设值、不逐字。`createAntdFieldAdapter()`：定位走 antd 自动 id（`leave.type`→`#type`，data-ai-field 优先），填值按控件分派——原生 input 直接设值（低风险），Select 模拟展开点选 `.ant-select-item-option`（中风险，依赖 antd 内部 class），DatePicker best-effort。react 侧 `useAIAgent({fieldAdapter})` 透传。demo 接入后 leave 模块 4 字段（含带完整 options 的 select）manifest 正确。core 26 + react 2 + scanner 20 + preset-react-router 10 + preset-antd 23 = **81 单测通过**，全量构建通过。诚实边界：Select/DatePicker 依赖 antd 内部 class，antd 大版本升级可能失效，代价收敛在 runtime 一个文件随 antd 版本维护。
+- **antd 运行时字段适配（封装进 preset-antd/runtime）**：抉择——不自建 UI 框架（会杀死「适配既有应用」定位），而把 antd 非原生控件的「定位 + 填值」脏活封装进独立浏览器子包 `@ai-native/preset-antd/runtime`（与构建时扫描分离，依赖集不同）。core 侧最小外置两个钩子（`ExecuteOptions.locateField` 覆盖默认 `data-ai-field` 定位；`FrameworkAdapter.setFieldValue` 放宽为可返回 Promise 并 await），并让 `typeInto` 对 readonly/combobox 一次性设值、不逐字。`createAntdFieldAdapter()`：定位走 antd 自动 id（`leave.type`→`#type`，data-ai-field 优先），填值按控件分派——原生 input 直接设值（低风险），Select 模拟展开点选 `.ant-select-item-option`（中风险，依赖 antd 内部 class），DatePicker best-effort。react 侧 `useAIAgent({fieldAdapter})` 透传。demo 接入后 leave 模块 4 字段（含带完整 options 的 select）manifest 正确。诚实边界：Select/DatePicker 依赖 antd 内部 class，antd 大版本升级可能失效，代价收敛在 runtime 一个文件随 antd 版本维护。
+- **执行反馈闭环（阶段 2 核心，`runAgent`）**：执行失败后把结构化反馈回流 LLM 重规划、自动重试，从「一次性猜对」升级为「失败可自我修正」。设计见 `docs/plans/0002-execution-feedback-loop.md`。闭环放 core（`packages/core/src/agent.ts` 的 `runAgent`）而非 react——纯编排、零框架依赖、headless/MCP 可复用、可单测。关键决策：① `ExecuteResult` 加语义化 `kind`（locate-failed / unknown-module / user-cancelled），executor 直接标注失败原因，比事后 regex 可靠；② 用户取消危险操作（user-cancelled）是明确意志，不重试；③ `buildRetryFeedback` 只回流「原指令 + 上次计划 + 失败步骤 + 已成功步骤」，不重复 manifest（已在 system prompt）；④ 默认 `maxAttempts:3` 防死循环，解析失败也计入并回流；⑤ `onAttempt` 回调让 react 展示「第 N 次尝试」。react 的 useAIAgent 改调 runAgent 变薄，暴露 `attempt` 状态，AIBar 显示重试徽标，对外 API 兼容。core 35 + react 2 + scanner 20 + preset-react-router 10 + preset-antd 23 = **90 单测通过**，全量构建通过。待浏览器运行时验证重试体验。
 
 ## 进行中
 
-- 无。阶段 2 字段自动推断 + antd 运行时适配构建级已达成，待浏览器运行时验证（尤其 Select 点选、DatePicker）。
+- 无。阶段 1 全部达成；阶段 2 四项成功标准已达成三项半（core 去 React ✓、preset-antd 零改动扫字段 ✓、执行反馈闭环 ✓、LLM provider 抽象已就位但仅 http 一种实现）。
 
 ## 待办（阶段 1：React 库自用）
 
@@ -40,8 +41,8 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 - [x] `@ai-native/preset-react-router`：第一个 preset，扫路由得模块清单，demo 零改动反向验证通过（manifest 与手标基线等价）
 - [x] 安全模型基本设计：危险操作（删除/审批/驳回）二次确认机制，demo 标注验证通过
 - [x] `@ai-native/preset-antd`：扫 antd `<Form.Item>` 推断字段清单 + `/runtime` 运行时字段适配器，demo leave 模块接入真实 antd 验证（构建级）
-- [ ] **浏览器运行时验证（需人工 + 有效 DeepSeek key）**：`cd examples/ai-native-demo && npm run dev`，逐条验收「提请假 / 新增员工 / 报销筛选 / 审批 / 切换视图」+ 光标演出 + 危险操作弹确认 + **antd 控件填值（reason/days 原生、type Select 点选、date DatePicker）**
-- [x] 将 antd 接入从 leave 推广到 employees/expense 三个表单模块，preset-antd 泛化性验证通过（构建级）：三模块字段清单齐全（含 Select options / InputNumber / DatePicker），antd 表单字段（preset 种子）与 Module 手标字段 `employees.keyword`·`expense.filterCategory` 正确合并互不覆盖
+- [x] **浏览器运行时验证（人工 + DeepSeek key）**：demo `npm run dev` 逐条验收提请假 / 新增员工 / 报销筛选 / 审批 / 切换视图 + 光标演出 + 危险操作弹确认 + antd 控件填值（原生 / Select 点选 / DatePicker）——已通过
+- [x] 将 antd 接入从 leave 推广到 employees/expense 三个表单模块，preset-antd 泛化性验证通过：三模块字段清单齐全（含 Select options / InputNumber / DatePicker），antd 表单字段（preset 种子）与 Module 手标字段 `employees.keyword`·`expense.filterCategory` 正确合并互不覆盖
 
 ## 技术债
 
@@ -53,7 +54,7 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 
 ## 后续阶段（详见 RFC §7）
 
-- 阶段 2：内核去框架化 + 自动推断（preset-antd、LLM provider 可插拔、执行反馈闭环）
+- 阶段 2 收尾：动态表单/条件渲染扫描（开放问题 #3）、provider 多实现（按需，抽象已可插拔）
 - 阶段 3：Vue adapter 反证解耦
 - 阶段 4：文档站 + 治理 + 公开发布（**发布是红线，届时确认**）
 

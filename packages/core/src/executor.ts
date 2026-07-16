@@ -35,7 +35,17 @@ export interface ExecuteResult {
   ok: boolean;
   stoppedAt?: number;
   reason?: string;
+  /** 失败原因分类。用于上层判断能否通过重规划修正（user-cancelled 不该重试）。 */
+  kind?: StopKind;
 }
+
+/**
+ * 执行中断的分类：
+ * - locate-failed：找不到目标元素（AI 可能选错 target / 页面未渲染，重规划有望修正）
+ * - unknown-module：navigate 到清单外模块（AI 编造，重规划有望修正）
+ * - user-cancelled：危险操作被用户拒绝（用户明确意志，不该重试）
+ */
+export type StopKind = 'locate-failed' | 'unknown-module' | 'user-cancelled';
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -95,7 +105,7 @@ async function typeInto(
 async function runStep(
   step: Step,
   opts: ExecuteOptions,
-): Promise<{ ok: boolean; reason?: string }> {
+): Promise<{ ok: boolean; reason?: string; kind?: StopKind }> {
   const stepDelay = opts.stepDelay ?? 500;
   const { adapter, presenter } = opts;
 
@@ -106,11 +116,12 @@ async function runStep(
 
   if (step.type === 'navigate') {
     const route = opts.routeOf(step.module);
-    if (!route) return { ok: false, reason: `未知模块 ${step.module}` };
+    if (!route) return { ok: false, reason: `未知模块 ${step.module}`, kind: 'unknown-module' };
     opts.onNarrate?.(`正在前往「${step.module}」`);
     adapter.navigate(route);
     const appeared = await waitForNavigated(step.module, route, opts.navigateTimeout ?? 3000);
-    if (!appeared) return { ok: false, reason: `导航到 ${step.module} 后页面未就绪` };
+    if (!appeared)
+      return { ok: false, reason: `导航到 ${step.module} 后页面未就绪`, kind: 'locate-failed' };
     if (stepDelay) await delay(stepDelay);
     return { ok: true };
   }
@@ -127,7 +138,7 @@ async function runStep(
         : `[data-ai-field="${step.target}"]`;
     el = await waitFor(selector, locateTimeout);
   }
-  if (!el) return { ok: false, reason: `找不到元素 ${step.target}` };
+  if (!el) return { ok: false, reason: `找不到元素 ${step.target}`, kind: 'locate-failed' };
 
   await presenter?.moveTo(el);
   const clearHl = presenter?.highlight(el);
@@ -138,7 +149,7 @@ async function runStep(
       const approved = await opts.confirm(action);
       if (!approved) {
         clearHl?.();
-        return { ok: false, reason: `用户取消了操作「${action.label}」` };
+        return { ok: false, reason: `用户取消了操作「${action.label}」`, kind: 'user-cancelled' };
       }
     }
     opts.onNarrate?.(`点击「${step.target}」`);
@@ -158,10 +169,10 @@ export async function execute(plan: AIPlan, opts: ExecuteOptions): Promise<Execu
   opts.presenter?.begin();
   try {
     for (let i = 0; i < plan.steps.length; i++) {
-      const { ok, reason } = await runStep(plan.steps[i], opts);
+      const { ok, reason, kind } = await runStep(plan.steps[i], opts);
       if (!ok) {
         opts.onNarrate?.(`已暂停：${reason}`);
-        return { ok: false, stoppedAt: i, reason };
+        return { ok: false, stoppedAt: i, reason, kind };
       }
     }
     return { ok: true };

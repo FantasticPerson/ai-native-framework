@@ -1,9 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  buildSystemPrompt,
-  parsePlan,
-  execute,
+  runAgent,
   domPresenter,
   type Manifest,
   type ManifestAction,
@@ -37,6 +35,8 @@ export interface UseAIAgentOptions {
     locateField(fieldId: string, timeout: number): Promise<Element | null>;
     setFieldValue(el: Element, value: string): void | Promise<void>;
   };
+  /** 执行失败后自动重规划的最大尝试次数（含首轮），默认 3。传 1 关闭闭环重试。 */
+  maxAttempts?: number;
 }
 
 function today(): string {
@@ -46,12 +46,20 @@ function today(): string {
 }
 
 export function useAIAgent(options: UseAIAgentOptions) {
-  const { manifest, provider, presenter = domPresenter, stepDelay = 550, onConfirm, fieldAdapter } =
-    options;
+  const {
+    manifest,
+    provider,
+    presenter = domPresenter,
+    stepDelay = 550,
+    onConfirm,
+    fieldAdapter,
+    maxAttempts,
+  } = options;
   const navigate = useNavigate();
   const [status, setStatus] = useState<AgentStatus>('idle');
   const [narration, setNarration] = useState('');
   const [error, setError] = useState('');
+  const [attempt, setAttempt] = useState(0);
 
   const routeOf = useCallback((name: string) => manifest.modules[name]?.route, [manifest]);
   const actionOf = useCallback(
@@ -74,56 +82,60 @@ export function useAIAgent(options: UseAIAgentOptions) {
     async (userText: string) => {
       setError('');
       setNarration('');
+      setAttempt(0);
       setStatus('thinking');
 
-      let text: string;
+      let result;
       try {
-        text = await provider(buildSystemPrompt(manifest, today()), [
-          { role: 'user', content: userText },
-        ]);
+        result = await runAgent(userText, {
+          manifest,
+          provider,
+          today: today(),
+          maxAttempts,
+          adapter: {
+            navigate,
+            setFieldValue: fieldAdapter ? fieldAdapter.setFieldValue : reactSetFieldValue,
+          },
+          routeOf,
+          actionOf,
+          confirm,
+          locateField: fieldAdapter?.locateField,
+          presenter: presenter ?? undefined,
+          onNarrate: setNarration,
+          stepDelay,
+          onAttempt: (n) => {
+            setAttempt(n);
+            setStatus(n === 1 ? 'thinking' : 'executing');
+            if (n > 1) setNarration(`第 ${n} 次尝试…`);
+          },
+        });
       } catch (e) {
         setStatus('error');
         setError((e as Error).message);
         return;
       }
 
-      const { plan, error: parseError } = parsePlan(text, manifest);
-      if (!plan) {
-        setStatus('error');
-        setError(parseError ?? '无法解析模型输出');
-        return;
-      }
-
-      setNarration(plan.narration);
-      if (plan.steps.length === 0) {
+      if (result.finalPlan) setNarration(result.finalPlan.narration);
+      if (result.ok) {
         setStatus('done');
-        return;
-      }
-
-      setStatus('executing');
-      const result = await execute(plan, {
-        adapter: {
-          navigate,
-          setFieldValue: fieldAdapter ? fieldAdapter.setFieldValue : reactSetFieldValue,
-        },
-        routeOf,
-        actionOf,
-        confirm,
-        locateField: fieldAdapter?.locateField,
-        presenter: presenter ?? undefined,
-        onNarrate: setNarration,
-        stepDelay,
-      });
-
-      if (!result.ok) {
+      } else {
         setStatus('error');
         setError(result.reason ?? '执行中断');
-      } else {
-        setStatus('done');
       }
     },
-    [manifest, provider, presenter, stepDelay, navigate, routeOf, actionOf, confirm, fieldAdapter],
+    [
+      manifest,
+      provider,
+      presenter,
+      stepDelay,
+      navigate,
+      routeOf,
+      actionOf,
+      confirm,
+      fieldAdapter,
+      maxAttempts,
+    ],
   );
 
-  return { status, narration, error, run };
+  return { status, narration, error, attempt, run };
 }

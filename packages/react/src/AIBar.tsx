@@ -16,6 +16,8 @@ export interface AIBarProps {
     narration: string;
     error: string;
     run: (text: string) => void;
+    /** 当前尝试轮次（闭环重试时 >1），可选 */
+    attempt?: number;
   };
   /** 快捷示例，点击填入输入框；不传则不展示 */
   examples?: string[];
@@ -25,7 +27,7 @@ export interface AIBarProps {
 
 /** 通用 AI 输入条。业务示例由 props 注入，组件本身不含任何业务内容。 */
 export function AIBar({ agent, examples = [], placeholder }: AIBarProps) {
-  const { status, narration, error, run } = agent;
+  const { status, narration, error, run, attempt } = agent;
   const [text, setText] = useState('');
   const busy = status === 'thinking' || status === 'executing';
 
@@ -50,6 +52,9 @@ export function AIBar({ agent, examples = [], placeholder }: AIBarProps) {
         {(narration || error || (status !== 'idle' && STATUS_TEXT[status])) && (
           <div className={`ai-status ${status === 'error' ? 'ai-status-error' : ''}`}>
             <span className="ai-status-tag">{STATUS_TEXT[status]}</span>
+            {busy && attempt && attempt > 1 && (
+              <span className="ai-status-tag">第 {attempt} 次尝试</span>
+            )}
             <span>{error || narration}</span>
           </div>
         )}

@@ -89,6 +89,7 @@ describe('execute', () => {
     expect(result.ok).toBe(false);
     expect(result.stoppedAt).toBe(0);
     expect(result.reason).toMatch(/找不到元素/);
+    expect(result.kind).toBe('locate-failed');
   });
 
   it('未知模块路由：navigate 中断', async () => {
@@ -99,6 +100,7 @@ describe('execute', () => {
 
     expect(result.ok).toBe(false);
     expect(result.reason).toMatch(/未知模块/);
+    expect(result.kind).toBe('unknown-module');
   });
 
   it('presenter 可选：不传也能 headless 执行', async () => {
@@ -232,6 +234,7 @@ describe('execute', () => {
       expect(onClick).not.toHaveBeenCalled();
       expect(result.ok).toBe(false);
       expect(result.reason).toMatch(/取消/);
+      expect(result.kind).toBe('user-cancelled');
     });
 
     it('confirm 返回 true：正常点击', async () => {
