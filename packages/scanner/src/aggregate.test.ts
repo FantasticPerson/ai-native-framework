@@ -63,4 +63,36 @@ describe('aggregate', () => {
     const m = aggregate(files);
     expect(m.modules.leave.actions.filter((a) => a.id === 'leave.create')).toHaveLength(1);
   });
+
+  describe('moduleSeeds（preset 自动推断）', () => {
+    it('种子建模块，actions/fields 按 id 前缀挂到种子模块上', () => {
+      const files = [
+        { path: 'a.tsx', code: `const A = () => <button data-ai-action="leave.submit" data-ai-label="提交" />;` },
+      ];
+      const m = aggregate(files, {
+        moduleSeeds: [{ name: 'leave', label: '请假管理', route: '/leave' }],
+      });
+      expect(m.modules.leave).toMatchObject({ label: '请假管理', route: '/leave' });
+      expect(m.modules.leave.actions).toContainEqual({ id: 'leave.submit', label: '提交' });
+    });
+
+    it('种子缺 label 时回退到 name', () => {
+      const m = aggregate([], { moduleSeeds: [{ name: 'leave', route: '/leave' }] });
+      expect(m.modules.leave.label).toBe('leave');
+    });
+
+    it('data-ai-module 手标覆盖同名种子的 label/route', () => {
+      const files = [
+        {
+          path: 'a.tsx',
+          code: `const A = () => <div data-ai-module="leave" data-ai-label="请假管理（精标）" data-ai-route="/leave-v2" />;`,
+        },
+      ];
+      const m = aggregate(files, {
+        moduleSeeds: [{ name: 'leave', label: '路由推断名', route: '/leave' }],
+      });
+      expect(m.modules.leave.label).toBe('请假管理（精标）');
+      expect(m.modules.leave.route).toBe('/leave-v2');
+    });
+  });
 });

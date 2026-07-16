@@ -21,6 +21,17 @@ export interface ManifestModule {
   fields: ManifestField[];
 }
 
+/**
+ * 模块定义：preset（生产者，如 preset-react-router 扫路由）与 scanner（消费者，
+ * 聚合能力清单）之间的构建期契约。label 可缺省——路由本身不编码人类可读名称，
+ * 缺省时由 scanner 回退到 name（诚实的边界，见 RFC §4 三层接入光谱）。
+ */
+export interface ModuleDef {
+  name: string;
+  label?: string;
+  route: string;
+}
+
 export interface Manifest {
   generatedAt: string;
   modules: Record<string, ManifestModule>;

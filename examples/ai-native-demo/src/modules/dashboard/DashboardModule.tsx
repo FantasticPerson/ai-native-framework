@@ -24,7 +24,7 @@ export function DashboardModule() {
   ];
 
   return (
-    <div data-ai-module="dashboard" data-ai-label="仪表盘" data-ai-route="/dashboard">
+    <div>
       <div className="page-head">
         <div className="page-title">仪表盘</div>
         <div className="toolbar">

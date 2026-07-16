@@ -45,6 +45,9 @@ importers:
         specifier: ^4.5.5
         version: 4.5.7(@types/react@18.3.31)(react@18.3.1)
     devDependencies:
+      '@ai-native/preset-react-router':
+        specifier: workspace:*
+        version: link:../../packages/preset-react-router
       '@ai-native/scanner':
         specifier: workspace:*
         version: link:../../packages/scanner
@@ -72,6 +75,31 @@ importers:
       jsdom:
         specifier: ^29.1.1
         version: 29.1.1
+
+  packages/preset-react-router:
+    dependencies:
+      '@ai-native/core':
+        specifier: workspace:*
+        version: link:../core
+      '@ai-native/scanner':
+        specifier: workspace:*
+        version: link:../scanner
+      '@babel/parser':
+        specifier: ^7.25.6
+        version: 7.29.7
+      '@babel/traverse':
+        specifier: ^7.25.6
+        version: 7.29.7
+      '@babel/types':
+        specifier: ^7.25.6
+        version: 7.29.7
+    devDependencies:
+      '@types/babel__traverse':
+        specifier: ^7.28.0
+        version: 7.28.0
+      '@types/node':
+        specifier: ^20.19.43
+        version: 20.19.43
 
   packages/react:
     dependencies:

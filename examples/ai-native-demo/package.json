@@ -21,6 +21,7 @@
     "zustand": "^4.5.5"
   },
   "devDependencies": {
+    "@ai-native/preset-react-router": "workspace:*",
     "@ai-native/scanner": "workspace:*",
     "@types/node": "^20.19.43",
     "@types/react": "^18.3.9",

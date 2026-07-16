@@ -40,7 +40,7 @@ export function EmployeesModule() {
   ];
 
   return (
-    <div data-ai-module="employees" data-ai-label="员工管理" data-ai-route="/employees">
+    <div>
       <div className="page-head">
         <div className="page-title">员工管理</div>
         <div className="toolbar">

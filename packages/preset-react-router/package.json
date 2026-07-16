@@ -1,0 +1,33 @@
+{
+  "name": "@ai-native/preset-react-router",
+  "version": "0.0.0",
+  "description": "自动推断预设：从 react-router 的 <Route> 静态推断模块清单，零改动接入",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@ai-native/core": "workspace:*",
+    "@ai-native/scanner": "workspace:*",
+    "@babel/parser": "^7.25.6",
+    "@babel/traverse": "^7.25.6",
+    "@babel/types": "^7.25.6"
+  },
+  "devDependencies": {
+    "@types/babel__traverse": "^7.28.0",
+    "@types/node": "^20.19.43"
+  }
+}

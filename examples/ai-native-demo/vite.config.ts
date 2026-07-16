@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { aiScannerPlugin } from '@ai-native/scanner/vite';
+import { reactRouterPreset } from '@ai-native/preset-react-router';
 import { handleChat } from './server/chat-proxy';
 
 function chatProxyPlugin(apiKey: string | undefined): Plugin {
@@ -25,6 +26,22 @@ export default defineConfig(({ mode }) => {
 
   return {
     server:{port:5088},
-    plugins: [react(), aiScannerPlugin(), chatProxyPlugin(apiKey)],
+    plugins: [
+      react(),
+      aiScannerPlugin({
+        presets: [
+          reactRouterPreset({
+            routesFile: 'src/App.tsx',
+            labels: {
+              '/dashboard': '仪表盘',
+              '/employees': '员工管理',
+              '/leave': '请假管理',
+              '/expense': '报销管理',
+            },
+          }),
+        ],
+      }),
+      chatProxyPlugin(apiKey),
+    ],
   };
 });

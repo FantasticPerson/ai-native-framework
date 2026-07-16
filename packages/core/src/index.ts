@@ -3,6 +3,7 @@ export type {
   ManifestModule,
   ManifestAction,
   ManifestField,
+  ModuleDef,
   Step,
   AIPlan,
 } from './types';

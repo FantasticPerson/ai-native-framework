@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, writeFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import type { Plugin } from 'vite';
 import { aggregate, type SourceFile } from './aggregate';
+import type { Preset } from './preset';
 
 export interface AIScannerOptions {
   /** 扫描根目录，相对 cwd，默认 'src/modules' */
@@ -10,6 +11,8 @@ export interface AIScannerOptions {
   output?: string;
   /** 扫描的文件扩展名，默认 ['.tsx'] */
   extensions?: string[];
+  /** 自动推断预设（如 reactRouterPreset），构建时收集模块种子。见 RFC §4 第一层。 */
+  presets?: Preset[];
 }
 
 function collectFiles(dir: string, extensions: string[]): SourceFile[] {
@@ -34,7 +37,8 @@ function collectFiles(dir: string, extensions: string[]): SourceFile[] {
 /** 扫描指定目录下的 data-ai-* 标注，生成 manifest JSON 文件，返回模块数。 */
 export function generateManifest(opts: Required<AIScannerOptions>): number {
   const files = collectFiles(resolve(process.cwd(), opts.modulesDir), opts.extensions);
-  const manifest = aggregate(files);
+  const moduleSeeds = opts.presets.flatMap((p) => p.collect());
+  const manifest = aggregate(files, { moduleSeeds });
   writeFileSync(resolve(process.cwd(), opts.output), JSON.stringify(manifest, null, 2) + '\n', 'utf-8');
   return Object.keys(manifest.modules).length;
 }
@@ -45,6 +49,7 @@ export function aiScannerPlugin(options: AIScannerOptions = {}): Plugin {
     modulesDir: options.modulesDir ?? 'src/modules',
     output: options.output ?? 'src/ai-manifest.json',
     extensions: options.extensions ?? ['.tsx'],
+    presets: options.presets ?? [],
   };
   const watchDir = resolve(process.cwd(), opts.modulesDir);
 

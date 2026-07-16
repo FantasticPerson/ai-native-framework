@@ -39,7 +39,7 @@ export function LeaveModule() {
   ];
 
   return (
-    <div data-ai-module="leave" data-ai-label="请假管理" data-ai-route="/leave">
+    <div>
       <div className="page-head">
         <div className="page-title">请假管理</div>
         <div className="toolbar">

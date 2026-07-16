@@ -17,7 +17,7 @@ export function ExpenseModule() {
   ];
 
   return (
-    <div data-ai-module="expense" data-ai-label="报销管理" data-ai-route="/expense">
+    <div>
       <div className="page-head">
         <div className="page-title">报销管理</div>
         <div className="toolbar">
