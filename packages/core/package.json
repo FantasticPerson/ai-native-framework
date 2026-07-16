@@ -12,9 +12,14 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean",
     "test": "vitest run"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1"
   }
 }
