@@ -124,4 +124,67 @@ describe('execute', () => {
     expect(clearHl).toHaveBeenCalledOnce();
     expect(end).toHaveBeenCalledOnce();
   });
+
+  describe('危险操作确认闸门', () => {
+    function setupDangerBtn() {
+      const btn = document.createElement('button');
+      btn.setAttribute('data-ai-action', 'employees.delete');
+      const onClick = vi.fn();
+      btn.addEventListener('click', onClick);
+      document.body.appendChild(btn);
+      return onClick;
+    }
+    const actionOf = (id: string) =>
+      id === 'employees.delete' ? { id, label: '删除员工', confirm: true } : { id, label: id };
+    const plan: AIPlan = { narration: '', steps: [{ type: 'click', target: 'employees.delete' }] };
+
+    it('confirm 返回 false：不点击，优雅中断', async () => {
+      const adapter = mockAdapter();
+      const onClick = setupDangerBtn();
+      const confirm = vi.fn().mockResolvedValue(false);
+
+      const result = await execute(plan, { adapter, routeOf, stepDelay: 0, actionOf, confirm });
+
+      expect(confirm).toHaveBeenCalledOnce();
+      expect(onClick).not.toHaveBeenCalled();
+      expect(result.ok).toBe(false);
+      expect(result.reason).toMatch(/取消/);
+    });
+
+    it('confirm 返回 true：正常点击', async () => {
+      const adapter = mockAdapter();
+      const onClick = setupDangerBtn();
+      const confirm = vi.fn().mockResolvedValue(true);
+
+      const result = await execute(plan, { adapter, routeOf, stepDelay: 0, actionOf, confirm });
+
+      expect(confirm).toHaveBeenCalledOnce();
+      expect(onClick).toHaveBeenCalledOnce();
+      expect(result.ok).toBe(true);
+    });
+
+    it('action.confirm 未设：不触发 confirm 回调', async () => {
+      const adapter = mockAdapter();
+      const btn = document.createElement('button');
+      btn.setAttribute('data-ai-action', 'leave.submit');
+      document.body.appendChild(btn);
+      const confirm = vi.fn().mockResolvedValue(false);
+
+      const safePlan: AIPlan = { narration: '', steps: [{ type: 'click', target: 'leave.submit' }] };
+      const result = await execute(safePlan, { adapter, routeOf, stepDelay: 0, actionOf, confirm });
+
+      expect(confirm).not.toHaveBeenCalled();
+      expect(result.ok).toBe(true);
+    });
+
+    it('需确认但未提供 confirm 回调：放行（策略缺省即放行，闸门是可选的）', async () => {
+      const adapter = mockAdapter();
+      const onClick = setupDangerBtn();
+
+      const result = await execute(plan, { adapter, routeOf, stepDelay: 0, actionOf });
+
+      expect(onClick).toHaveBeenCalledOnce();
+      expect(result.ok).toBe(true);
+    });
+  });
 });

@@ -1,4 +1,4 @@
-import type { AIPlan, Step } from './types';
+import type { AIPlan, ManifestAction, Step } from './types';
 import type { FrameworkAdapter } from './adapter';
 import type { Presenter } from './presenter';
 
@@ -7,6 +7,13 @@ export interface ExecuteOptions {
   adapter: FrameworkAdapter;
   /** 根据模块名取路由 */
   routeOf: (moduleName: string) => string | undefined;
+  /** 根据 action id 取操作元信息（用于判断是否需确认）。不传则视为无危险操作。 */
+  actionOf?: (actionId: string) => ManifestAction | undefined;
+  /**
+   * 危险操作（action.confirm 为真）执行前的确认闸门。返回 false 则优雅中断。
+   * 不传则不拦截（策略缺省即放行——闸门是可选机制，core 只定义"要不要问"）。
+   */
+  confirm?: (action: ManifestAction) => boolean | Promise<boolean>;
   /** 可见演出（光标、高亮）。不传则 headless 执行 */
   presenter?: Presenter;
   /** 每步旁白回调 */
@@ -89,6 +96,14 @@ async function runStep(
   const clearHl = presenter?.highlight(el);
 
   if (step.type === 'click') {
+    const action = opts.actionOf?.(step.target);
+    if (action?.confirm && opts.confirm) {
+      const approved = await opts.confirm(action);
+      if (!approved) {
+        clearHl?.();
+        return { ok: false, reason: `用户取消了操作「${action.label}」` };
+      }
+    }
     opts.onNarrate?.(`点击「${step.target}」`);
     (el as HTMLElement).click();
   } else {

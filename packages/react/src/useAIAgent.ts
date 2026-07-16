@@ -6,6 +6,7 @@ import {
   execute,
   domPresenter,
   type Manifest,
+  type ManifestAction,
   type LLMProvider,
   type Presenter,
 } from '@ai-native/core';
@@ -22,6 +23,11 @@ export interface UseAIAgentOptions {
   presenter?: Presenter | null;
   /** 步骤间隔（ms），默认 550 */
   stepDelay?: number;
+  /**
+   * 危险操作（manifest 里标了 confirm）执行前的确认回调，返回 false 则中断。
+   * 默认用 window.confirm 兜底；宿主可传自定义实现弹自己的 Modal。
+   */
+  onConfirm?: (action: ManifestAction) => boolean | Promise<boolean>;
 }
 
 function today(): string {
@@ -31,13 +37,28 @@ function today(): string {
 }
 
 export function useAIAgent(options: UseAIAgentOptions) {
-  const { manifest, provider, presenter = domPresenter, stepDelay = 550 } = options;
+  const { manifest, provider, presenter = domPresenter, stepDelay = 550, onConfirm } = options;
   const navigate = useNavigate();
   const [status, setStatus] = useState<AgentStatus>('idle');
   const [narration, setNarration] = useState('');
   const [error, setError] = useState('');
 
   const routeOf = useCallback((name: string) => manifest.modules[name]?.route, [manifest]);
+  const actionOf = useCallback(
+    (id: string) => {
+      for (const mod of Object.values(manifest.modules)) {
+        const found = mod.actions.find((a) => a.id === id);
+        if (found) return found;
+      }
+      return undefined;
+    },
+    [manifest],
+  );
+  const confirm = useCallback(
+    (action: ManifestAction) =>
+      onConfirm ? onConfirm(action) : window.confirm(`AI 即将执行「${action.label}」，是否继续？`),
+    [onConfirm],
+  );
 
   const run = useCallback(
     async (userText: string) => {
@@ -73,6 +94,8 @@ export function useAIAgent(options: UseAIAgentOptions) {
       const result = await execute(plan, {
         adapter: { navigate, setFieldValue: reactSetFieldValue },
         routeOf,
+        actionOf,
+        confirm,
         presenter: presenter ?? undefined,
         onNarrate: setNarration,
         stepDelay,
@@ -85,7 +108,7 @@ export function useAIAgent(options: UseAIAgentOptions) {
         setStatus('done');
       }
     },
-    [manifest, provider, presenter, stepDelay, navigate, routeOf],
+    [manifest, provider, presenter, stepDelay, navigate, routeOf, actionOf, confirm],
   );
 
   return { status, narration, error, run };

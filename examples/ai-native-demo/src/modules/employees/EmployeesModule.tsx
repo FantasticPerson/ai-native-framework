@@ -31,7 +31,7 @@ export function EmployeesModule() {
           >
             编辑
           </button>{' '}
-          <button className="btn btn-danger" data-ai-action="employees.delete" data-ai-label="删除员工" onClick={() => remove(row.id)}>
+          <button className="btn btn-danger" data-ai-action="employees.delete" data-ai-label="删除员工" data-ai-confirm onClick={() => remove(row.id)}>
             删除
           </button>
         </>

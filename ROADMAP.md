@@ -20,6 +20,7 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 - **端到端反向验证（构建级）**：demo 拷入 `examples/ai-native-demo`，纳入 workspace，改用 `workspace:*` 引用三个框架包。删除全部被替代的旧代码（src/ai/steps·executor·cursor·prompt·useAIAgent、scripts/ai-scanner），改用框架的 useAIAgent + AIBar + createHttpProvider + scanner vite 插件。`tsc -b && vite build` 通过，scanner 插件生成 4 模块 manifest。
 - **`@ai-native/preset-react-router`（自动推断第一层）**：`scanRoutes` 静态解析 JSX `<Route path element>` 推断模块（跳过 Navigate/动态参数/通配），`reactRouterPreset({routesFile, labels})` 产出 `ModuleDef[]` 种子。10 项单测通过。scanner 侧开 `Preset` 接口 + `aggregate` 的 `moduleSeeds`（种子建模块、`data-ai-module` 手标优先覆盖），vite 插件加 `presets` 选项。
 - **preset 反向验证（零改动接入）**：demo 删除 4 个模块组件根节点的 `data-ai-module/label/route` 手标（根节点变回朴素 `<div>`），改由 `reactRouterPreset` 扫 `App.tsx` 路由 + 一处 `labels` 配置推断模块清单。重新构建后生成的 manifest 与手标基线**内容字节级等价**（仅模块键序改为跟随路由声明顺序）。证明「自动推断 + 配置补漏」两层光谱可替代散落手标。
+- **安全模型基本设计（危险操作二次确认）**：危险性作为操作固有属性声明在能力清单（`ManifestAction.confirm`），编译期确定。数据流：`data-ai-confirm` 标注 → scanner 填 `confirm:true` → executor 在 click 前经 `confirm` 回调二次确认，拒绝则优雅中断。机制/策略分离——core 只定义「要不要问」（`actionOf` + `confirm` 回调，缺省即放行，headless 可用），react 默认 `window.confirm` 兜底并暴露 `onConfirm` 让宿主弹自定义 Modal；prompt 标注危险操作让 LLM 知情但闸门在 executor。默认全放行，只拦显式标注的操作（方案 A：诚实、不打扰）。demo 给删除员工/审批/驳回请假三个操作标注验证。core 22 + react 2 + scanner 17 + preset 10 = 51 单测通过。
 
 ## 进行中
 
@@ -35,8 +36,8 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 - [x] `@ai-native/scanner`：scanSource + aggregate + 参数化 vite 插件
 - [x] 用 `ai-native-demo` 作为首个使用者，构建级端到端验证通过（examples/ai-native-demo）
 - [x] `@ai-native/preset-react-router`：第一个 preset，扫路由得模块清单，demo 零改动反向验证通过（manifest 与手标基线等价）
-- [ ] **浏览器运行时验证（需人工 + 有效 DeepSeek key）**：`cd examples/ai-native-demo && npm run dev`，逐条验收「提请假 / 新增员工 / 报销筛选 / 审批 / 切换视图」+ 光标演出
-- [ ] 安全模型基本设计：危险操作（删除/提交）二次确认机制
+- [x] 安全模型基本设计：危险操作（删除/审批/驳回）二次确认机制，demo 标注验证通过
+- [ ] **浏览器运行时验证（需人工 + 有效 DeepSeek key）**：`cd examples/ai-native-demo && npm run dev`，逐条验收「提请假 / 新增员工 / 报销筛选 / 审批 / 切换视图」+ 光标演出 + 危险操作弹确认
 
 ## 技术债
 

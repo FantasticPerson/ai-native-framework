@@ -5,6 +5,8 @@
 export interface ManifestAction {
   id: string;
   label: string;
+  /** 危险操作（删除、提交等）执行前需用户确认。由 data-ai-confirm 标注，默认关闭。 */
+  confirm?: boolean;
 }
 
 export interface ManifestField {

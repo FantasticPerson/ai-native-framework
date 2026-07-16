@@ -7,7 +7,7 @@ function renderManifest(m: Manifest): string {
     lines.push(`## 模块 ${name}（${mod.label}，路由 ${mod.route}）`);
     if (mod.actions.length) {
       lines.push('操作:');
-      for (const a of mod.actions) lines.push(`  - ${a.id}：${a.label}`);
+      for (const a of mod.actions) lines.push(`  - ${a.id}：${a.label}${a.confirm ? '（危险操作，需用户确认）' : ''}`);
     }
     if (mod.fields.length) {
       lines.push('字段:');
@@ -51,5 +51,6 @@ ${renderManifest(manifest)}
 4. select 类型字段的 value 必须是其可选值之一。
 5. 数字字段的 value 也用字符串表示，如 "1"。
 6. 如果用户的指令无法用清单里的能力完成，返回空 steps 数组，并在 narration 中说明原因。
-7. 只做用户要求的操作，不要多做。`;
+7. 只做用户要求的操作，不要多做。
+8. 标注「危险操作」的步骤，系统会在执行前请用户二次确认；你仍可正常编排，无需回避。`;
 }

@@ -43,10 +43,10 @@ export function LeaveModule() {
       <div className="page-head">
         <div className="page-title">请假管理</div>
         <div className="toolbar">
-          <button className="btn" data-ai-action="leave.approve" data-ai-label="审批通过最新待审批的请假" onClick={approveLatest}>
+          <button className="btn" data-ai-action="leave.approve" data-ai-label="审批通过最新待审批的请假" data-ai-confirm onClick={approveLatest}>
             通过最新
           </button>
-          <button className="btn btn-danger" data-ai-action="leave.reject" data-ai-label="驳回最新待审批的请假" onClick={rejectLatest}>
+          <button className="btn btn-danger" data-ai-action="leave.reject" data-ai-label="驳回最新待审批的请假" data-ai-confirm onClick={rejectLatest}>
             驳回最新
           </button>
           <button className="btn btn-primary" data-ai-action="leave.create" data-ai-label="新增请假申请" onClick={() => setOpen(true)}>

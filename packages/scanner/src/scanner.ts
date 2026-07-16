@@ -1,7 +1,7 @@
 import { parse } from '@babel/parser';
 import _traverse from '@babel/traverse';
 import type { JSXOpeningElement, JSXAttribute } from '@babel/types';
-import type { ManifestField } from '@ai-native/core';
+import type { ManifestAction, ManifestField } from '@ai-native/core';
 import type { ScanResult } from './types';
 
 // @babel/traverse 的默认导出在 ESM 下需取 .default
@@ -70,7 +70,10 @@ export function scanSource(code: string): ScanResult {
       }
 
       if (action.present && action.literal && action.value) {
-        result.actions.push({ id: action.value, label: label.value ?? action.value });
+        const confirm = readLiteral(el, 'data-ai-confirm');
+        const entry: ManifestAction = { id: action.value, label: label.value ?? action.value };
+        if (confirm.present) entry.confirm = true;
+        result.actions.push(entry);
       }
 
       if (field.present && field.literal && field.value) {

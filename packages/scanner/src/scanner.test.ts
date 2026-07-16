@@ -8,6 +8,18 @@ describe('scanSource', () => {
     expect(r.actions).toContainEqual({ id: 'leave.create', label: '新增' });
   });
 
+  it('data-ai-confirm 标注危险操作', () => {
+    const code = `const A = () => <button data-ai-action="employees.delete" data-ai-label="删除" data-ai-confirm>删除</button>;`;
+    const r = scanSource(code);
+    expect(r.actions).toContainEqual({ id: 'employees.delete', label: '删除', confirm: true });
+  });
+
+  it('无 data-ai-confirm 的操作不带 confirm 字段', () => {
+    const code = `const A = () => <button data-ai-action="leave.create" data-ai-label="新增" />;`;
+    const r = scanSource(code);
+    expect(r.actions[0]).not.toHaveProperty('confirm');
+  });
+
   it('提取 data-ai-field（number）', () => {
     const code = `const A = () => <input data-ai-field="leave.days" data-ai-label="天数" data-ai-type="number" />;`;
     const r = scanSource(code);
