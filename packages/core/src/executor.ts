@@ -14,6 +14,11 @@ export interface ExecuteOptions {
    * 不传则不拦截（策略缺省即放行——闸门是可选机制，core 只定义"要不要问"）。
    */
   confirm?: (action: ManifestAction) => boolean | Promise<boolean>;
+  /**
+   * 覆盖 fill 步骤的字段定位。默认按 [data-ai-field="<id>"] 查找。
+   * antd 等非原生控件用不上 data-ai-field（会污染扫描），改由 preset 运行时按 antd 自动 id 定位。
+   */
+  locateField?: (fieldId: string, timeout: number) => Promise<Element | null>;
   /** 可见演出（光标、高亮）。不传则 headless 执行 */
   presenter?: Presenter;
   /** 每步旁白回调 */
@@ -60,22 +65,31 @@ async function waitForNavigated(module: string, route: string, timeout: number):
   return ready();
 }
 
-/** 逐字打字填入；有 presenter 时带动画延时，headless 时一次到位 */
+/** 能否逐字输入：可编辑的 input/textarea 才行；readonly/combobox（如 antd Select）一次性设值 */
+function canTypeChar(el: Element): boolean {
+  const tag = (el as HTMLElement).tagName;
+  if (tag !== 'INPUT' && tag !== 'TEXTAREA') return false;
+  if ((el as HTMLInputElement).readOnly) return false;
+  if (el.getAttribute('role') === 'combobox') return false;
+  return true;
+}
+
+/** 逐字打字填入；有 presenter 且控件可逐字输入时带动画，否则一次到位 */
 async function typeInto(
   el: Element,
   value: string,
   adapter: FrameworkAdapter,
   animate: boolean,
 ) {
-  if ((el as HTMLElement).tagName === 'SELECT' || !animate) {
-    adapter.setFieldValue(el, value);
+  if (!animate || !canTypeChar(el)) {
+    await adapter.setFieldValue(el, value);
     return;
   }
   for (let i = 1; i <= value.length; i++) {
-    adapter.setFieldValue(el, value.slice(0, i));
+    await adapter.setFieldValue(el, value.slice(0, i));
     await delay(45);
   }
-  if (value.length === 0) adapter.setFieldValue(el, '');
+  if (value.length === 0) await adapter.setFieldValue(el, '');
 }
 
 async function runStep(
@@ -102,9 +116,17 @@ async function runStep(
   }
 
   // click / fill 需要先定位元素
-  const selector =
-    step.type === 'click' ? `[data-ai-action="${step.target}"]` : `[data-ai-field="${step.target}"]`;
-  const el = await waitFor(selector, opts.locateTimeout ?? 1500);
+  const locateTimeout = opts.locateTimeout ?? 1500;
+  let el: Element | null;
+  if (step.type === 'fill' && opts.locateField) {
+    el = await opts.locateField(step.target, locateTimeout);
+  } else {
+    const selector =
+      step.type === 'click'
+        ? `[data-ai-action="${step.target}"]`
+        : `[data-ai-field="${step.target}"]`;
+    el = await waitFor(selector, locateTimeout);
+  }
   if (!el) return { ok: false, reason: `找不到元素 ${step.target}` };
 
   await presenter?.moveTo(el);

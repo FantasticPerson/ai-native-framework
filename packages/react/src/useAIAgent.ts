@@ -28,6 +28,15 @@ export interface UseAIAgentOptions {
    * 默认用 window.confirm 兜底；宿主可传自定义实现弹自己的 Modal。
    */
   onConfirm?: (action: ManifestAction) => boolean | Promise<boolean>;
+  /**
+   * 字段适配器：覆盖非原生控件的定位与填值。用于 antd 等 UI 库——
+   * 传 createAntdFieldAdapter()（来自 @ai-native/preset-antd/runtime）。
+   * 不传则用默认 data-ai-field 定位 + React 原生 setter 填值。
+   */
+  fieldAdapter?: {
+    locateField(fieldId: string, timeout: number): Promise<Element | null>;
+    setFieldValue(el: Element, value: string): void | Promise<void>;
+  };
 }
 
 function today(): string {
@@ -37,7 +46,8 @@ function today(): string {
 }
 
 export function useAIAgent(options: UseAIAgentOptions) {
-  const { manifest, provider, presenter = domPresenter, stepDelay = 550, onConfirm } = options;
+  const { manifest, provider, presenter = domPresenter, stepDelay = 550, onConfirm, fieldAdapter } =
+    options;
   const navigate = useNavigate();
   const [status, setStatus] = useState<AgentStatus>('idle');
   const [narration, setNarration] = useState('');
@@ -92,10 +102,14 @@ export function useAIAgent(options: UseAIAgentOptions) {
 
       setStatus('executing');
       const result = await execute(plan, {
-        adapter: { navigate, setFieldValue: reactSetFieldValue },
+        adapter: {
+          navigate,
+          setFieldValue: fieldAdapter ? fieldAdapter.setFieldValue : reactSetFieldValue,
+        },
         routeOf,
         actionOf,
         confirm,
+        locateField: fieldAdapter?.locateField,
         presenter: presenter ?? undefined,
         onNarrate: setNarration,
         stepDelay,
@@ -108,7 +122,7 @@ export function useAIAgent(options: UseAIAgentOptions) {
         setStatus('done');
       }
     },
-    [manifest, provider, presenter, stepDelay, navigate, routeOf, actionOf, confirm],
+    [manifest, provider, presenter, stepDelay, navigate, routeOf, actionOf, confirm, fieldAdapter],
   );
 
   return { status, narration, error, run };

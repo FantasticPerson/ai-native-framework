@@ -7,6 +7,9 @@
 export interface FrameworkAdapter {
   /** 跳转到指定路由 */
   navigate(route: string): void;
-  /** 给表单元素填入值，需触发目标框架的响应式更新 */
-  setFieldValue(el: Element, value: string): void;
+  /**
+   * 给表单元素填入值，需触发目标框架的响应式更新。
+   * 可返回 Promise——antd Select/DatePicker 等非原生控件需异步模拟点选，executor 会 await。
+   */
+  setFieldValue(el: Element, value: string): void | Promise<void>;
 }

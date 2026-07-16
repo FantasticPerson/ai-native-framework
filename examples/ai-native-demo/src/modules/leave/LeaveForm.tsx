@@ -1,6 +1,6 @@
 import { useState } from 'react';
+import { Form, Input, InputNumber, DatePicker, Select } from 'antd';
 import { Modal } from '../../components/Modal';
-import { Field } from '../../components/Field';
 import { useLeaveStore } from './leave.store';
 
 interface Props {
@@ -43,10 +43,37 @@ export function LeaveForm({ open, onClose }: Props) {
         </>
       }
     >
-      <Field aiField="leave.type" aiLabel="请假类型" type="select" options={['事假', '病假', '年假', '调休']} value={form.type} onChange={set('type')} />
-      <Field aiField="leave.days" aiLabel="请假天数" type="number" value={form.days} onChange={set('days')} />
-      <Field aiField="leave.date" aiLabel="请假日期" type="date" value={form.date} onChange={set('date')} />
-      <Field aiField="leave.reason" aiLabel="请假事由" type="text" value={form.reason} onChange={set('reason')} />
+      <Form layout="vertical">
+        <Form.Item name="type" label="请假类型">
+          <Select
+            value={form.type || undefined}
+            onChange={set('type')}
+            options={[
+              { value: '事假', label: '事假' },
+              { value: '病假', label: '病假' },
+              { value: '年假', label: '年假' },
+              { value: '调休', label: '调休' },
+            ]}
+          />
+        </Form.Item>
+        <Form.Item name="days" label="请假天数">
+          <InputNumber
+            value={form.days || undefined}
+            onChange={(v) => set('days')(v == null ? '' : String(v))}
+            style={{ width: '100%' }}
+          />
+        </Form.Item>
+        <Form.Item name="date" label="请假日期">
+          <DatePicker
+            value={undefined}
+            onChange={(_, ds) => set('date')(Array.isArray(ds) ? ds[0] : ds)}
+            style={{ width: '100%' }}
+          />
+        </Form.Item>
+        <Form.Item name="reason" label="请假事由">
+          <Input value={form.reason} onChange={(e) => set('reason')(e.target.value)} />
+        </Form.Item>
+      </Form>
     </Modal>
   );
 }

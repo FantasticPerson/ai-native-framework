@@ -21,6 +21,8 @@ function mockAdapter(): FrameworkAdapter & { navigated: string[] } {
 // routeOf：从模块名查路由
 const routeOf = (m: string) => (m === 'leave' ? '/leave' : undefined);
 
+const delayMs = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 beforeEach(() => {
   document.body.innerHTML = '';
   history.pushState({}, '', '/');
@@ -136,6 +138,74 @@ describe('execute', () => {
     expect(highlight).toHaveBeenCalledWith(btn);
     expect(clearHl).toHaveBeenCalledOnce();
     expect(end).toHaveBeenCalledOnce();
+  });
+
+  describe('字段定位与填值外置（适配非原生控件，如 antd）', () => {
+    it('locateField：传入时覆盖默认的 data-ai-field 定位', async () => {
+      const adapter = mockAdapter();
+      // 页面上没有 data-ai-field，只有 antd 风格的 id
+      const input = document.createElement('input');
+      input.id = 'days';
+      document.body.appendChild(input);
+
+      const locateField = vi.fn(async (fieldId: string) =>
+        fieldId === 'leave.days' ? document.querySelector('#days') : null,
+      );
+      const plan: AIPlan = { narration: '', steps: [{ type: 'fill', target: 'leave.days', value: '3' }] };
+      const result = await execute(plan, { adapter, routeOf, stepDelay: 0, locateField });
+
+      expect(locateField).toHaveBeenCalledWith('leave.days', expect.any(Number));
+      expect(input.value).toBe('3');
+      expect(result.ok).toBe(true);
+    });
+
+    it('setFieldValue 返回 Promise：executor 会 await 完成', async () => {
+      const order: string[] = [];
+      const input = document.createElement('input');
+      input.setAttribute('data-ai-field', 'leave.type');
+      document.body.appendChild(input);
+
+      const adapter: FrameworkAdapter = {
+        navigate() {},
+        async setFieldValue(el, value) {
+          await delayMs(20);
+          (el as HTMLInputElement).value = value;
+          order.push('filled');
+        },
+      };
+      const plan: AIPlan = { narration: '', steps: [{ type: 'fill', target: 'leave.type', value: '事假' }] };
+      const result = await execute(plan, { adapter, routeOf, stepDelay: 0 });
+
+      expect(order).toEqual(['filled']);
+      expect(input.value).toBe('事假');
+      expect(result.ok).toBe(true);
+    });
+
+    it('readonly 控件（如 antd Select combobox）：一次性设值，不逐字打字', async () => {
+      const calls: string[] = [];
+      const input = document.createElement('input');
+      input.setAttribute('data-ai-field', 'leave.type');
+      input.setAttribute('readonly', '');
+      input.setAttribute('role', 'combobox');
+      document.body.appendChild(input);
+
+      const adapter: FrameworkAdapter = {
+        navigate() {},
+        setFieldValue(_el, value) {
+          calls.push(value);
+        },
+      };
+      const plan: AIPlan = { narration: '', steps: [{ type: 'fill', target: 'leave.type', value: '事假' }] };
+      // 带 presenter → 若是可逐字文本框会逐字调用；readonly 应一次性
+      await execute(plan, {
+        adapter,
+        routeOf,
+        stepDelay: 0,
+        presenter: { begin() {}, end() {}, async moveTo() {}, highlight: () => () => {} },
+      });
+
+      expect(calls).toEqual(['事假']);
+    });
   });
 
   describe('危险操作确认闸门', () => {

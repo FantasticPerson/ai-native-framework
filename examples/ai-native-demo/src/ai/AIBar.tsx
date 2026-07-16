@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { AIBar as FrameworkAIBar, useAIAgent } from '@ai-native/react';
 import { createHttpProvider, type Manifest } from '@ai-native/core';
+import { createAntdFieldAdapter } from '@ai-native/preset-antd/runtime';
 import manifestJson from '../ai-manifest.json';
 
 const manifest = manifestJson as Manifest;
@@ -16,7 +17,8 @@ const EXAMPLES = [
 /** demo 的 AIBar：组合框架的 useAIAgent + AIBar，注入本应用的 manifest、provider、示例。 */
 export function AIBar() {
   const provider = useMemo(() => createHttpProvider({ endpoint: '/api/chat' }), []);
-  const agent = useAIAgent({ manifest, provider });
+  const fieldAdapter = useMemo(() => createAntdFieldAdapter(), []);
+  const agent = useAIAgent({ manifest, provider, fieldAdapter });
 
   return (
     <FrameworkAIBar
