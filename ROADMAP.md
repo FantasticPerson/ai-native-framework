@@ -25,10 +25,11 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 - **antd 运行时字段适配（封装进 preset-antd/runtime）**：抉择——不自建 UI 框架（会杀死「适配既有应用」定位），而把 antd 非原生控件的「定位 + 填值」脏活封装进独立浏览器子包 `@ai-native/preset-antd/runtime`（与构建时扫描分离，依赖集不同）。core 侧最小外置两个钩子（`ExecuteOptions.locateField` 覆盖默认 `data-ai-field` 定位；`FrameworkAdapter.setFieldValue` 放宽为可返回 Promise 并 await），并让 `typeInto` 对 readonly/combobox 一次性设值、不逐字。`createAntdFieldAdapter()`：定位走 antd 自动 id（`leave.type`→`#type`，data-ai-field 优先），填值按控件分派——原生 input 直接设值（低风险），Select 模拟展开点选 `.ant-select-item-option`（中风险，依赖 antd 内部 class），DatePicker best-effort。react 侧 `useAIAgent({fieldAdapter})` 透传。demo 接入后 leave 模块 4 字段（含带完整 options 的 select）manifest 正确。诚实边界：Select/DatePicker 依赖 antd 内部 class，antd 大版本升级可能失效，代价收敛在 runtime 一个文件随 antd 版本维护。
 - **执行反馈闭环（阶段 2 核心，`runAgent`）**：执行失败后把结构化反馈回流 LLM 重规划、自动重试，从「一次性猜对」升级为「失败可自我修正」。设计见 `docs/plans/0002-execution-feedback-loop.md`。闭环放 core（`packages/core/src/agent.ts` 的 `runAgent`）而非 react——纯编排、零框架依赖、headless/MCP 可复用、可单测。关键决策：① `ExecuteResult` 加语义化 `kind`（locate-failed / unknown-module / user-cancelled），executor 直接标注失败原因，比事后 regex 可靠；② 用户取消危险操作（user-cancelled）是明确意志，不重试；③ `buildRetryFeedback` 只回流「原指令 + 上次计划 + 失败步骤 + 已成功步骤」，不重复 manifest（已在 system prompt）；④ 默认 `maxAttempts:3` 防死循环，解析失败也计入并回流；⑤ `onAttempt` 回调让 react 展示「第 N 次尝试」。react 的 useAIAgent 改调 runAgent 变薄，暴露 `attempt` 状态，AIBar 显示重试徽标，对外 API 兼容。core 35 + react 2 + scanner 20 + preset-react-router 10 + preset-antd 23 = **90 单测通过**，全量构建通过。待浏览器运行时验证重试体验。
 - **动态表单扫描——解析变量引用的 Select options（阶段 2 收尾）**：实测确认四类「动态」场景（探测见 `docs/plans/0003-dynamic-form-scanning.md`）——条件渲染字段 babel 已扫到、循环生成字段（name 非字面量）是物理边界、唯一值得补的是「options 引用同文件常量」这一最常见写法（之前只认内联字面量数组，引用常量/`.map()` 则 options 丢失）。`scanFormItems` 现先遍历顶层 `const NAME = [...]` 建符号表，`readSelectOptions` 支持 `options={IDENT}`、`options={IDENT.map(...)}`、`options={[...].map(...)}`，`.map` 变换忽略（数组项即 value 源）。抽 `arrayExprToStrings` 纯函数去重复。诚实边界：跨文件 import 的常量、API/state 驱动的 options 不解析。scan-form 10→15 用例。demo 反向验证：LeaveForm 的 options 改回真实开发写法（模块级 `LEAVE_TYPES` 常量 + `.map()`），manifest 的 `leave.type.options` 仍完整——扫描器能跟上真实写法，此前为迁就扫描器把 options 内联的妥协可取消。core 35 + react 2 + scanner 20 + preset-react-router 10 + preset-antd 28 = **95 单测通过**，全量构建通过。
+- **LLM provider 多实现（阶段 2 收尾）**：`LLMProvider` 本就是纯函数类型（用户可传任意实现），补一个官方直连参考实现证明抽象可插拔，而非堆砌 SDK 包装。新增 `createOpenAICompatibleProvider`——直连 OpenAI 兼容的 `/chat/completions`（DeepSeek / OpenAI / Moonshot / 通义等同一套协议），system 作首条 message、强制 `response_format=json_object`、`temperature=0`，取 `choices[0].message.content`。安全边界写进代码注释：此实现携带 apiKey，仅用于可安全持有 key 的环境（Node/CLI/MCP），浏览器仍走 `createHttpProvider` + 服务端代理（key 不进 bundle 是红线）。provider 2→5 用例，共 **98 单测通过**，全量构建通过。
 
 ## 进行中
 
-- 无。阶段 1 全部达成；阶段 2 四项成功标准已达成三项半（core 去 React ✓、preset-antd 零改动扫字段 ✓、执行反馈闭环 ✓、LLM provider 抽象已就位但仅 http 一种实现）。
+- 无。阶段 1 全部达成；**阶段 2 四项成功标准全部达成**（core 去 React ✓、preset-antd 零改动扫字段 ✓、执行反馈闭环 ✓、LLM provider 可插拔 ✓）。下一步进入阶段 3（Vue adapter 反证解耦）或补文档站。
 
 ## 待办（阶段 1：React 库自用）
 
@@ -56,8 +57,7 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 
 ## 后续阶段（详见 RFC §7）
 
-- 阶段 2 收尾：动态表单/条件渲染扫描（开放问题 #3）、provider 多实现（按需，抽象已可插拔）
-- 阶段 3：Vue adapter 反证解耦
+- 阶段 3：Vue adapter 反证解耦（验证 core 真的框架无关）
 - 阶段 4：文档站 + 治理 + 公开发布（**发布是红线，届时确认**）
 
 ## 开放问题（RFC 附录 A）

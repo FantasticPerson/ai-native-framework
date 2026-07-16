@@ -17,5 +17,10 @@ export type { RunAgentOptions, AgentRunResult } from './agent';
 export { domPresenter } from './dom-presenter';
 export { buildSystemPrompt, buildRetryFeedback } from './prompt';
 export type { RetryContext } from './prompt';
-export { createHttpProvider } from './provider';
-export type { LLMProvider, ChatMessage, HttpProviderOptions } from './provider';
+export { createHttpProvider, createOpenAICompatibleProvider } from './provider';
+export type {
+  LLMProvider,
+  ChatMessage,
+  HttpProviderOptions,
+  OpenAICompatibleOptions,
+} from './provider';
