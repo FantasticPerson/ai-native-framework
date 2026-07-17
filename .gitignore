@@ -7,7 +7,7 @@ node_modules/
 dist/
 build/
 *.tsbuildinfo
-.vitepress/cache/
+**/.vitepress/cache/
 
 # 环境变量与密钥
 .env
