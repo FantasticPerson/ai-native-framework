@@ -1,6 +1,26 @@
-import { parse } from '@vue/compiler-sfc';
+import { createRequire } from 'node:module';
 import type { ManifestAction, ManifestField } from '@ai-native/core';
 import type { ScanResult } from './types';
+
+// @vue/compiler-sfc 是可选 peer 依赖：只有扫 .vue 时才需要，纯 React 项目不必安装。
+// 用 createRequire 惰性加载，避免把 Vue 编译器强塞进所有 scanner 用户的依赖树。
+type SfcParse = (code: string, opts: { filename: string }) => {
+  descriptor: { template?: { ast?: unknown } };
+  errors: Array<{ message: string }>;
+};
+let cachedParse: SfcParse | undefined;
+function loadVueParser(): SfcParse {
+  if (cachedParse) return cachedParse;
+  const require = createRequire(import.meta.url);
+  try {
+    cachedParse = (require('@vue/compiler-sfc') as { parse: SfcParse }).parse;
+  } catch {
+    throw new Error(
+      '扫描 .vue 文件需要 @vue/compiler-sfc，但未找到。请在项目中安装：pnpm add -D @vue/compiler-sfc',
+    );
+  }
+  return cachedParse;
+}
 
 type FieldType = ManifestField['type'];
 const FIELD_TYPES: FieldType[] = ['text', 'number', 'date', 'select'];
@@ -39,6 +59,7 @@ function hasDynamicBind(props: VueAttr[], name: string): boolean {
 /** 扫描单个 Vue SFC，提取 <template> 中的 data-ai-* 标注，产出与 scanSource 同构的 ScanResult。 */
 export function scanVueSource(code: string): ScanResult {
   const result: ScanResult = { actions: [], fields: [], warnings: [] };
+  const parse = loadVueParser();
 
   let ast: VueNode | null | undefined;
   try {

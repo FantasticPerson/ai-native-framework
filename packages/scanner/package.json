@@ -47,13 +47,16 @@
     "@ai-native/core": "workspace:*",
     "@babel/parser": "^7.25.6",
     "@babel/traverse": "^7.25.6",
-    "@babel/types": "^7.25.6",
-    "@vue/compiler-sfc": "^3.5.40"
+    "@babel/types": "^7.25.6"
   },
   "peerDependencies": {
+    "@vue/compiler-sfc": ">=3",
     "vite": ">=5"
   },
   "peerDependenciesMeta": {
+    "@vue/compiler-sfc": {
+      "optional": true
+    },
     "vite": {
       "optional": true
     }
@@ -61,6 +64,7 @@
   "devDependencies": {
     "@types/babel__traverse": "^7.28.0",
     "@types/node": "^20.19.43",
+    "@vue/compiler-sfc": "^3.5.40",
     "vite": "^5.4.8"
   },
   "sideEffects": false,

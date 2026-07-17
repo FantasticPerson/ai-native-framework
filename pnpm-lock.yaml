@@ -220,9 +220,6 @@ importers:
       '@babel/types':
         specifier: ^7.25.6
         version: 7.29.7
-      '@vue/compiler-sfc':
-        specifier: ^3.5.40
-        version: 3.5.40
     devDependencies:
       '@types/babel__traverse':
         specifier: ^7.28.0
@@ -230,6 +227,9 @@ importers:
       '@types/node':
         specifier: ^20.19.43
         version: 20.19.43
+      '@vue/compiler-sfc':
+        specifier: ^3.5.40
+        version: 3.5.40
       vite:
         specifier: ^5.4.8
         version: 5.4.21(@types/node@20.19.43)(lightningcss@1.32.0)

@@ -56,7 +56,7 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 - demo 构建脚本 `tsc -b && vite build`：tsc 先跑，会读到上一轮的旧 `ai-manifest.json`（vite 插件才重扫生成）。当 manifest 结构变动时可能读到过期内容；目前靠 vite 阶段重新生成兜底，后续可让 tsc 不依赖 manifest 或调整脚本顺序。
 - workspace 包引用的是 **dist 构建产物**（非 src）。改了某个 preset/scanner 的 src 后，必须先 `pnpm --filter <pkg> build` 再构建 demo，否则 vite 插件用的是旧 dist（调试动态表单扫描时踩过：src 已支持常量 options 但 demo manifest 仍缺，根因是 preset-antd dist 未重建）。`pnpm -r build` 会按依赖序全建，无此问题。
 - `src/components/Field.tsx`：三个表单 antd 化后已无人引用，刻意保留作为「接入光谱最底层——手动精标 data-ai-field 写法」的对照样例（非死代码，展示用）。
-- `@ai-native/scanner` 现把 `@vue/compiler-sfc` 放进 `dependencies`（vite 插件扫 `.vue` 时用）。纯 React 项目装 scanner 会连带下载它。阶段 4 发布前应改为 optional peerDependency + `scanVueSource` 内动态 `import`，只在真扫到 `.vue` 时才加载，避免非 Vue 用户背包袱。
+- ~~`@ai-native/scanner` 把 `@vue/compiler-sfc` 放进 `dependencies`，纯 React 项目会连带下载~~ ✅ **已解决**：`@vue/compiler-sfc` 改为 optional `peerDependency`（pnpm 默认不装 optional peer，React 用户不再连带下载；Vue 用户本就有它）。`scanVueSource` 用 `createRequire` 惰性加载，只在真扫 `.vue` 时才 require，缺失则抛清晰错误（提示 `pnpm add -D @vue/compiler-sfc`）。dist 产物已确认无顶部静态 import。scanner 34 单测 + vue-demo 端到端仍通过。
 
 ## 后续阶段（详见 RFC §7）
 
@@ -65,7 +65,7 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
   - [ ] `npm publish`（6 包，`0.1.0`，需主人确认；scoped 包已配 `publishConfig.access=public`）
   - [ ] 打 release tag `v0.1.0` + GitHub Release
   - [ ] 文档站部署（Cloudflare Pages / GitHub Pages，涉外部操作，单独确认）
-  - [ ] 发布前技术债：`@vue/compiler-sfc` 拆为 optional peer + 动态 import（见「技术债」）
+  - [x] 发布前技术债：`@vue/compiler-sfc` 拆为 optional peer + 惰性 `createRequire`（见「技术债」）
 
 ## 开放问题（RFC 附录 A）
 
