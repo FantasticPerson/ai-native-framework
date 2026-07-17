@@ -19,6 +19,28 @@ describe('aggregate', () => {
     expect(m.modules.employees.fields).toContainEqual({ id: 'employees.name', label: '姓名', type: 'text' });
   });
 
+  it('按文件后缀分派：.vue 走 Vue SFC 扫描，.tsx 走 JSX 扫描', () => {
+    const files = [
+      {
+        path: 'leave/LeaveView.vue',
+        code: `<template><div data-ai-module="leave" data-ai-label="请假" data-ai-route="/leave"><select data-ai-field="leave.type" data-ai-label="类型" data-ai-type="select" data-ai-options="事假,病假" /></div></template>`,
+      },
+      {
+        path: 'emp/EmpForm.tsx',
+        code: `const B = () => <input data-ai-field="emp.name" data-ai-label="姓名" data-ai-type="text" />;`,
+      },
+    ];
+    const m = aggregate(files);
+    expect(m.modules.leave.route).toBe('/leave');
+    expect(m.modules.leave.fields).toContainEqual({
+      id: 'leave.type',
+      label: '类型',
+      type: 'select',
+      options: ['事假', '病假'],
+    });
+    expect(m.modules.emp.fields).toContainEqual({ id: 'emp.name', label: '姓名', type: 'text' });
+  });
+
   it('同模块跨文件合并', () => {
     const files = [
       {

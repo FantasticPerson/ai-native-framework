@@ -4,7 +4,7 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 
 ## 当前阶段
 
-阶段 0（RFC）——已完成。
+阶段 0（RFC）已完成，阶段 1（React 库自用）已完成，阶段 2（core 去框架化 + 执行闭环）已完成，**阶段 3（Vue adapter 反证解耦）已完成**——core 未改一行即跑通第二个框架。下一步阶段 4：文档站 + 治理 + 公开发布（发布是红线，届时确认）。
 
 ## 已完成（已验证）
 
@@ -26,10 +26,11 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 - **执行反馈闭环（阶段 2 核心，`runAgent`）**：执行失败后把结构化反馈回流 LLM 重规划、自动重试，从「一次性猜对」升级为「失败可自我修正」。设计见 `docs/plans/0002-execution-feedback-loop.md`。闭环放 core（`packages/core/src/agent.ts` 的 `runAgent`）而非 react——纯编排、零框架依赖、headless/MCP 可复用、可单测。关键决策：① `ExecuteResult` 加语义化 `kind`（locate-failed / unknown-module / user-cancelled），executor 直接标注失败原因，比事后 regex 可靠；② 用户取消危险操作（user-cancelled）是明确意志，不重试；③ `buildRetryFeedback` 只回流「原指令 + 上次计划 + 失败步骤 + 已成功步骤」，不重复 manifest（已在 system prompt）；④ 默认 `maxAttempts:3` 防死循环，解析失败也计入并回流；⑤ `onAttempt` 回调让 react 展示「第 N 次尝试」。react 的 useAIAgent 改调 runAgent 变薄，暴露 `attempt` 状态，AIBar 显示重试徽标，对外 API 兼容。core 35 + react 2 + scanner 20 + preset-react-router 10 + preset-antd 23 = **90 单测通过**，全量构建通过。待浏览器运行时验证重试体验。
 - **动态表单扫描——解析变量引用的 Select options（阶段 2 收尾）**：实测确认四类「动态」场景（探测见 `docs/plans/0003-dynamic-form-scanning.md`）——条件渲染字段 babel 已扫到、循环生成字段（name 非字面量）是物理边界、唯一值得补的是「options 引用同文件常量」这一最常见写法（之前只认内联字面量数组，引用常量/`.map()` 则 options 丢失）。`scanFormItems` 现先遍历顶层 `const NAME = [...]` 建符号表，`readSelectOptions` 支持 `options={IDENT}`、`options={IDENT.map(...)}`、`options={[...].map(...)}`，`.map` 变换忽略（数组项即 value 源）。抽 `arrayExprToStrings` 纯函数去重复。诚实边界：跨文件 import 的常量、API/state 驱动的 options 不解析。scan-form 10→15 用例。demo 反向验证：LeaveForm 的 options 改回真实开发写法（模块级 `LEAVE_TYPES` 常量 + `.map()`），manifest 的 `leave.type.options` 仍完整——扫描器能跟上真实写法，此前为迁就扫描器把 options 内联的妥协可取消。core 35 + react 2 + scanner 20 + preset-react-router 10 + preset-antd 28 = **95 单测通过**，全量构建通过。
 - **LLM provider 多实现（阶段 2 收尾）**：`LLMProvider` 本就是纯函数类型（用户可传任意实现），补一个官方直连参考实现证明抽象可插拔，而非堆砌 SDK 包装。新增 `createOpenAICompatibleProvider`——直连 OpenAI 兼容的 `/chat/completions`（DeepSeek / OpenAI / Moonshot / 通义等同一套协议），system 作首条 message、强制 `response_format=json_object`、`temperature=0`，取 `choices[0].message.content`。安全边界写进代码注释：此实现携带 apiKey，仅用于可安全持有 key 的环境（Node/CLI/MCP），浏览器仍走 `createHttpProvider` + 服务端代理（key 不进 bundle 是红线）。provider 2→5 用例，共 **98 单测通过**，全量构建通过。
+- **Vue adapter 反证 core 解耦（阶段 3，`@ai-native/vue` + `examples/vue-demo`）**：用第二个框架跑通同一套 core，把「core 框架无关」从自证（源码零 React import）升级为反证。硬判据：**全程不改 `packages/core` 一行**，落地后 `git diff packages/core` 为空即成立。设计见 `docs/plans/0004-vue-adapter-decoupling.md`。三处改动都不碰 core：① scanner 加 `scanVueSource`（`@vue/compiler-sfc` 解析 `<template>` AST 提取 `data-ai-*`，与 `scanSource` 产出同构 `ScanResult`；动态绑定 `:data-ai-x` 告警不采集），`aggregate` 按 `.vue` 后缀分派——同一扫描器同时喂 React/Vue，证明扫描链框架无关；② 新建 `@ai-native/vue`：`vueSetFieldValue`（直接写 `el.value` 派发 `input`，Vue 的 `v-model` 监听原生事件，无需 React 原型链 setter hack——这个真实差异正是 adapter 必须分包的证据）、`useAIAgent` composable（`ref` 管状态 + `vue-router` 的 `push` 做 navigate，内部调 core 同一个 `runAgent`）、`AIBar`（`defineComponent` + `h()` 渲染函数写，纯 TS 单工具链，不引 SFC 编译链）；③ 新建 `examples/vue-demo`（vite + plugin-vue + vue-router，2 个原生表单 SFC，`aiScannerPlugin({extensions:['.vue']})` 扫出正确 manifest 含 select options，chat-proxy 与 React demo 逐字一致）。core 35 + react 2 + **vue 4** + scanner 34（+14 Vue） + preset-react-router 10 + preset-antd 28 = **113 单测通过**，6 包 + 2 demo 全量构建通过，**`git diff packages/core` 为空——反证成立**。待浏览器人工验收（需 DeepSeek key，同阶段 2 先例）。
 
 ## 进行中
 
-- 无。阶段 1 全部达成；**阶段 2 四项成功标准全部达成**（core 去 React ✓、preset-antd 零改动扫字段 ✓、执行反馈闭环 ✓、LLM provider 可插拔 ✓）。下一步进入阶段 3（Vue adapter 反证解耦）或补文档站。
+- 无。阶段 1/2/3 全部达成。**阶段 3 成功标准达成**：第二个框架（Vue）跑通同一套 core，两个 adapter（react/vue）并存，`git diff packages/core` 为空——内核未偷偷依赖 React。下一步阶段 4（文档站 + 治理 + 公开发布，发布是红线）。
 
 ## 待办（阶段 1：React 库自用）
 
@@ -54,10 +55,11 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 - demo 构建脚本 `tsc -b && vite build`：tsc 先跑，会读到上一轮的旧 `ai-manifest.json`（vite 插件才重扫生成）。当 manifest 结构变动时可能读到过期内容；目前靠 vite 阶段重新生成兜底，后续可让 tsc 不依赖 manifest 或调整脚本顺序。
 - workspace 包引用的是 **dist 构建产物**（非 src）。改了某个 preset/scanner 的 src 后，必须先 `pnpm --filter <pkg> build` 再构建 demo，否则 vite 插件用的是旧 dist（调试动态表单扫描时踩过：src 已支持常量 options 但 demo manifest 仍缺，根因是 preset-antd dist 未重建）。`pnpm -r build` 会按依赖序全建，无此问题。
 - `src/components/Field.tsx`：三个表单 antd 化后已无人引用，刻意保留作为「接入光谱最底层——手动精标 data-ai-field 写法」的对照样例（非死代码，展示用）。
+- `@ai-native/scanner` 现把 `@vue/compiler-sfc` 放进 `dependencies`（vite 插件扫 `.vue` 时用）。纯 React 项目装 scanner 会连带下载它。阶段 4 发布前应改为 optional peerDependency + `scanVueSource` 内动态 `import`，只在真扫到 `.vue` 时才加载，避免非 Vue 用户背包袱。
 
 ## 后续阶段（详见 RFC §7）
 
-- 阶段 3：Vue adapter 反证解耦（验证 core 真的框架无关）
+- ~~阶段 3：Vue adapter 反证解耦~~ ✅ 已完成（见「已完成」）
 - 阶段 4：文档站 + 治理 + 公开发布（**发布是红线，届时确认**）
 
 ## 开放问题（RFC 附录 A）

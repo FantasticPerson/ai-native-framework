@@ -1,0 +1,71 @@
+{
+  "generatedAt": "build-time",
+  "modules": {
+    "employees": {
+      "label": "员工管理",
+      "route": "/employees",
+      "actions": [
+        {
+          "id": "employees.add",
+          "label": "新增员工"
+        }
+      ],
+      "fields": [
+        {
+          "id": "employees.name",
+          "label": "姓名",
+          "type": "text"
+        },
+        {
+          "id": "employees.dept",
+          "label": "部门",
+          "type": "select",
+          "options": [
+            "技术部",
+            "产品部",
+            "市场部",
+            "行政部"
+          ]
+        },
+        {
+          "id": "employees.position",
+          "label": "职位",
+          "type": "text"
+        }
+      ]
+    },
+    "leave": {
+      "label": "请假管理",
+      "route": "/leave",
+      "actions": [
+        {
+          "id": "leave.submit",
+          "label": "提交申请"
+        }
+      ],
+      "fields": [
+        {
+          "id": "leave.type",
+          "label": "请假类型",
+          "type": "select",
+          "options": [
+            "事假",
+            "病假",
+            "年假",
+            "调休"
+          ]
+        },
+        {
+          "id": "leave.days",
+          "label": "天数",
+          "type": "number"
+        },
+        {
+          "id": "leave.reason",
+          "label": "事由",
+          "type": "text"
+        }
+      ]
+    }
+  }
+}

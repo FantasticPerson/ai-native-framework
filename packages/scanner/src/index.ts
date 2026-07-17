@@ -1,4 +1,5 @@
 export { scanSource } from './scanner';
+export { scanVueSource } from './scan-vue';
 export { aggregate } from './aggregate';
 export type { SourceFile, AggregateOptions } from './aggregate';
 export type { ScanResult } from './types';

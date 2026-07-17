@@ -1,6 +1,8 @@
 import { scanSource } from './scanner';
+import { scanVueSource } from './scan-vue';
 import type { Manifest, ManifestModule } from '@ai-native/core';
 import type { PresetContribution } from './preset';
+import type { ScanResult } from './types';
 
 export interface SourceFile {
   path: string;
@@ -13,6 +15,11 @@ export interface AggregateOptions {
    * 遇到同名模块或同 id 字段/操作时覆盖种子（见 RFC §4：自动推断是地板，手标是天花板）。
    */
   contribution?: PresetContribution;
+}
+
+/** 按文件后缀选择扫描器：.vue 走 Vue SFC 扫描，其余按 JSX/TSX 扫描。 */
+function scanFile(file: SourceFile): ScanResult {
+  return file.path.endsWith('.vue') ? scanVueSource(file.code) : scanSource(file.code);
 }
 
 /** id 的 `module.` 前缀即所属模块名 */
@@ -55,7 +62,7 @@ export function aggregate(files: SourceFile[], opts: AggregateOptions = {}): Man
 
   // 2) data-ai-module 手标建立/覆盖模块定义（手标优先，覆盖同名种子）
   for (const f of files) {
-    const r = scanSource(f.code);
+    const r = scanFile(f);
     if (r.module) {
       const mod = ensureModule(manifest, r.module.name);
       mod.label = r.module.label;
@@ -65,7 +72,7 @@ export function aggregate(files: SourceFile[], opts: AggregateOptions = {}): Man
 
   // 3) data-ai-action / data-ai-field 手标，按 id 前缀定位模块，覆盖同 id 种子
   for (const f of files) {
-    const r = scanSource(f.code);
+    const r = scanFile(f);
     for (const a of r.actions) {
       upsert(ensureModule(manifest, moduleOf(a.id)).actions, a);
     }
