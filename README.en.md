@@ -1,6 +1,6 @@
 # AI-Native Frontend Framework
 
-> [简体中文](README.md) | English
+> [简体中文](README.md) | English · [📖 Docs](https://ai-native-framework.pages.dev/en/)
 
 > Give your own frontend app high-accuracy, visible and controllable AI operations.
 
@@ -54,7 +54,7 @@ pnpm --filter vue-demo dev         # minimal Vue example (counter-proof of a fra
 - Design & positioning: [`docs/rfcs/0001-ai-native-frontend-framework.md`](docs/rfcs/0001-ai-native-frontend-framework.md)
 - Progress: [`ROADMAP.md`](ROADMAP.md)
 - Contributing: [`CONTRIBUTING.md`](CONTRIBUTING.md)
-- Docs site: `pnpm --filter docs-site dev` (VitePress)
+- Docs site: <https://ai-native-framework.pages.dev/en/> (online, VitePress); local preview `pnpm --filter docs-site dev`
 
 ## Status
 

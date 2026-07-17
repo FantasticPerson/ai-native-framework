@@ -1,6 +1,6 @@
 # AI-Native 前端框架
 
-> 简体中文 | [English](README.en.md)
+> 简体中文 | [English](README.en.md) · [📖 在线文档](https://ai-native-framework.pages.dev/)
 
 > 让你自己的前端应用，获得高准确率、可见可控的 AI 操作能力。
 
@@ -54,7 +54,7 @@ pnpm --filter vue-demo dev         # Vue 最小示例（反证 core 框架无关
 - 设计与定位：[`docs/rfcs/0001-ai-native-frontend-framework.md`](docs/rfcs/0001-ai-native-frontend-framework.md)
 - 进度：[`ROADMAP.md`](ROADMAP.md)
 - 贡献指南：[`CONTRIBUTING.md`](CONTRIBUTING.md)
-- 文档站：`pnpm --filter docs-site dev`（VitePress）
+- 文档站：<https://ai-native-framework.pages.dev/>（在线，VitePress）；本地预览 `pnpm --filter docs-site dev`
 
 ## 状态
 
