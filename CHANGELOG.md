@@ -4,12 +4,11 @@
 
 ## [Unreleased]
 
-- 阶段 4 发布准备：文档站、治理文件、CI、包 publish 元数据。
-- 尚未发布到 npm。
+- 暂无。
 
-## [0.1.0] - 未发布
+## [0.1.0] - 2026-07-17
 
-首个具备完整能力链路的版本（阶段 1-3 成果）。
+首个具备完整能力链路的版本（阶段 1-3 成果），已发布至 npm（scope `@ai-operable`，public access）；文档站上线 Cloudflare Pages。
 
 ### 新增
 
@@ -25,4 +24,5 @@
 - 危险操作（删除/审批/驳回等）作为能力清单固有属性在编译期声明，执行前经 `confirm` 回调二次确认。
 - LLM key 不进前端 bundle：浏览器走 `createHttpProvider` + 服务端代理；直连 provider 仅限可安全持有 key 的环境（Node/CLI/MCP）。
 
-[Unreleased]: https://github.com/FantasticPerson/ai-native-framework/compare/main...HEAD
+[Unreleased]: https://github.com/FantasticPerson/ai-native-framework/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/FantasticPerson/ai-native-framework/releases/tag/v0.1.0
