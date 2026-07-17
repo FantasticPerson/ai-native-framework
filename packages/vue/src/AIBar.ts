@@ -19,7 +19,7 @@ export interface AIBarAgent {
 }
 
 /**
- * 通用 AI 输入条（Vue 版）。用渲染函数写，避免引入 SFC 编译链，与 @ai-native/react 的
+ * 通用 AI 输入条（Vue 版）。用渲染函数写，避免引入 SFC 编译链，与 @ai-operable/react 的
  * AIBar 对称。业务示例由 props 注入，组件本身不含任何业务内容。
  * agent 传 useAIAgent 的返回值（其字段是 ref，故取 .value）。
  */

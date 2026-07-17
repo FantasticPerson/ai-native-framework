@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import type { Preset, PresetContribution } from '@ai-native/scanner';
+import type { Preset, PresetContribution } from '@ai-operable/scanner';
 import { scanRoutes } from './scan-routes';
 
 export interface ReactRouterPresetOptions {

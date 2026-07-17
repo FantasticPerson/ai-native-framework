@@ -16,8 +16,8 @@ pnpm -r test      # 运行全部单测
 单包操作：
 
 ```bash
-pnpm --filter @ai-native/core test
-pnpm --filter @ai-native/scanner build
+pnpm --filter @ai-operable/core test
+pnpm --filter @ai-operable/scanner build
 ```
 
 > **注意**：workspace 包之间引用的是 **dist 构建产物**（非 src）。改了某个包的 src 后，依赖它的包/示例要先 `pnpm --filter <pkg> build` 再构建，否则用的是旧 dist。`pnpm -r build` 会按依赖序全建，无此问题。

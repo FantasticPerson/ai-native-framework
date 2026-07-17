@@ -1,6 +1,6 @@
 import { scanSource } from './scanner';
 import { scanVueSource } from './scan-vue';
-import type { Manifest, ManifestModule } from '@ai-native/core';
+import type { Manifest, ManifestModule } from '@ai-operable/core';
 import type { PresetContribution } from './preset';
 import type { ScanResult } from './types';
 

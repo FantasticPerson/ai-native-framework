@@ -2,7 +2,7 @@
 
 ## 范围与红线
 
-- **命名转正**：`@ai-native/*` 转为正式 scope。事实依据——npm 上 `@ai-native` 整个 scope 完全可用（core/scanner/react/vue/preset-* 全部 404，scope 搜索无匹配），语义精准，已贯穿 6 包 + 2 demo + 全部文档。另起新名要批量返工却无收益，故转正是事实支持的最优解，**零代码改动**。
+- **命名转正**：`@ai-native/*` 转为正式 scope。事实依据——npm 上 `@ai-native` 整个 scope 完全可用（core/scanner/react/vue/preset-* 全部 404，scope 搜索无匹配），语义精准，已贯穿 6 包 + 2 demo + 全部文档。另起新名要批量返工却无收益，故转正是事实支持的最优解，**零代码改动**。**更正（发布时）**：`@ai-native` npm org 已被占、当前账号无发布权，正式 scope 改为 `@ai-operable`（详见 RFC 附录 A 第 5 条更正说明）。
 - **本轮只做发布前准备**：文档站、LICENSE、CONTRIBUTING、CI、语义化版本配置、包 publish 元数据。
 - **红线**：真正的 `npm publish` / 正式 release **不在本轮**，全部就绪后单独停下确认再执行。
 
@@ -15,7 +15,7 @@
 ## 改动清单
 
 ### A. 命名转正（代码零改，仅补元数据）
-`@ai-native/*` 已是各包 name 与包间引用，无需改。只在 RFC 附录 A 第 5 条记「命名已定为 @ai-native，理由：scope 可用 + 语义精准 + 零返工」。
+`@ai-native/*` 已是各包 name 与包间引用，无需改。只在 RFC 附录 A 第 5 条记「命名已定为 @ai-native，理由：scope 可用 + 语义精准 + 零返工」。（发布时更正为 `@ai-operable`，见上。）
 
 ### B. 包 publish 元数据（6 包 package.json 各补齐）
 每个包补：`license`、`author`、`repository`（同一 git URL + `directory` 指向各包）、`homepage`、`keywords`、`publishConfig: { access: "public" }`（scoped 包默认 private，必须显式 public）、`sideEffects: false`（利于 tree-shaking；preset-antd/runtime 有 DOM 副作用需单独核对）。版本 `0.0.0 → 0.1.0`。`files` 字段已有 `dist`，核对齐全。

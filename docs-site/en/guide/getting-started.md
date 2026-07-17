@@ -18,9 +18,9 @@ pnpm -r test          # run all unit tests
 
 ```ts
 // vite.config.ts
-import { aiScannerPlugin } from '@ai-native/scanner/vite';
-import { reactRouterPreset } from '@ai-native/preset-react-router';
-import { antdPreset } from '@ai-native/preset-antd';
+import { aiScannerPlugin } from '@ai-operable/scanner/vite';
+import { reactRouterPreset } from '@ai-operable/preset-react-router';
+import { antdPreset } from '@ai-operable/preset-antd';
 
 export default defineConfig({
   plugins: [
@@ -37,8 +37,8 @@ export default defineConfig({
 2. **Compose `useAIAgent` + `AIBar`** in your app:
 
 ```tsx
-import { AIBar, useAIAgent } from '@ai-native/react';
-import { createHttpProvider, type Manifest } from '@ai-native/core';
+import { AIBar, useAIAgent } from '@ai-operable/react';
+import { createHttpProvider, type Manifest } from '@ai-operable/core';
 import manifestJson from './ai-manifest.json';
 
 export function AI() {
@@ -57,4 +57,4 @@ pnpm --filter ai-native-demo dev   # full React + antd example (bring your own L
 pnpm --filter vue-demo dev         # minimal Vue example (counter-proof of a framework-agnostic core)
 ```
 
-Vue integration is symmetric — just swap `@ai-native/react` for `@ai-native/vue`. See the [Vue API](/en/api/vue).
+Vue integration is symmetric — just swap `@ai-operable/react` for `@ai-operable/vue`. See the [Vue API](/en/api/vue).

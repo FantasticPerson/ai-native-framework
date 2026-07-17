@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import type { Manifest, LLMProvider } from '@ai-native/core';
+import type { Manifest, LLMProvider } from '@ai-operable/core';
 import { useAIAgent } from './useAIAgent';
 
 // mock vue-router 的 useRouter：composable 内部用它做 navigate

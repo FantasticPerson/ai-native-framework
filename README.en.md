@@ -26,12 +26,12 @@ Not either-or, combine as needed:
 
 | Package | What it does | Depends on |
 |---|---|---|
-| `@ai-native/core` | Framework-agnostic runtime: manifest types, LLM-output parsing & whitelist validation, executor, execution feedback loop, providers | no frontend framework |
-| `@ai-native/scanner` | Build-time AST scanning (JSX + Vue SFC) + Vite plugin, generates the manifest | core |
-| `@ai-native/react` | React adapter: controlled-component filling, `useAIAgent` hook, `AIBar` | core |
-| `@ai-native/vue` | Vue adapter: native filling, `useAIAgent` composable, `AIBar` | core |
-| `@ai-native/preset-react-router` | Auto-inference layer 1: scans routes for the module list | scanner |
-| `@ai-native/preset-antd` | Auto-inference layer 2: scans antd forms for the field list + runtime field adaptation | scanner |
+| `@ai-operable/core` | Framework-agnostic runtime: manifest types, LLM-output parsing & whitelist validation, executor, execution feedback loop, providers | no frontend framework |
+| `@ai-operable/scanner` | Build-time AST scanning (JSX + Vue SFC) + Vite plugin, generates the manifest | core |
+| `@ai-operable/react` | React adapter: controlled-component filling, `useAIAgent` hook, `AIBar` | core |
+| `@ai-operable/vue` | Vue adapter: native filling, `useAIAgent` composable, `AIBar` | core |
+| `@ai-operable/preset-react-router` | Auto-inference layer 1: scans routes for the module list | scanner |
+| `@ai-operable/preset-antd` | Auto-inference layer 2: scans antd forms for the field list + runtime field adaptation | scanner |
 
 The `core` knows no frontend framework, only "capability manifest + adapter interface". The React and Vue adapters coexist and run the same core — the counter-proof that the core is truly decoupled.
 

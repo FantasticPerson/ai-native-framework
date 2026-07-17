@@ -18,9 +18,9 @@ pnpm -r test          # 运行全部单测
 
 ```ts
 // vite.config.ts
-import { aiScannerPlugin } from '@ai-native/scanner/vite';
-import { reactRouterPreset } from '@ai-native/preset-react-router';
-import { antdPreset } from '@ai-native/preset-antd';
+import { aiScannerPlugin } from '@ai-operable/scanner/vite';
+import { reactRouterPreset } from '@ai-operable/preset-react-router';
+import { antdPreset } from '@ai-operable/preset-antd';
 
 export default defineConfig({
   plugins: [
@@ -37,8 +37,8 @@ export default defineConfig({
 2. **在应用里组合 `useAIAgent` + `AIBar`**：
 
 ```tsx
-import { AIBar, useAIAgent } from '@ai-native/react';
-import { createHttpProvider, type Manifest } from '@ai-native/core';
+import { AIBar, useAIAgent } from '@ai-operable/react';
+import { createHttpProvider, type Manifest } from '@ai-operable/core';
 import manifestJson from './ai-manifest.json';
 
 export function AI() {
@@ -57,4 +57,4 @@ pnpm --filter ai-native-demo dev   # React + antd 全功能示例（需自备 LL
 pnpm --filter vue-demo dev         # Vue 最小示例（反证 core 框架无关）
 ```
 
-Vue 接入方式对称，把 `@ai-native/react` 换成 `@ai-native/vue` 即可，详见 [Vue API](/api/vue)。
+Vue 接入方式对称，把 `@ai-operable/react` 换成 `@ai-operable/vue` 即可，详见 [Vue API](/api/vue)。

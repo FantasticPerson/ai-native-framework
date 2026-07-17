@@ -1,5 +1,5 @@
 {
-  "name": "@ai-native/vue",
+  "name": "@ai-operable/vue",
   "version": "0.1.0",
   "description": "Vue 适配器：原生表单填值、useAIAgent composable、AIBar 组件",
   "license": "MIT",
@@ -39,7 +39,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@ai-native/core": "workspace:*"
+    "@ai-operable/core": "workspace:*"
   },
   "peerDependencies": {
     "vue": ">=3",

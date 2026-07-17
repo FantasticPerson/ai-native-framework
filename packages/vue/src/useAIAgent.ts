@@ -7,7 +7,7 @@ import {
   type ManifestAction,
   type LLMProvider,
   type Presenter,
-} from '@ai-native/core';
+} from '@ai-operable/core';
 import { vueSetFieldValue } from './adapter';
 
 export type AgentStatus = 'idle' | 'thinking' | 'executing' | 'done' | 'error';

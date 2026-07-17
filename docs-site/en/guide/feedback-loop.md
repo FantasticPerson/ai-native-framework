@@ -8,10 +8,10 @@ The LLM's first operation plan can be wrong: inventing modules outside the manif
 
 ## The mechanism
 
-After an execution failure, `runAgent` in `@ai-native/core` feeds **structured feedback** back to the LLM to re-plan and retry automatically:
+After an execution failure, `runAgent` in `@ai-operable/core` feeds **structured feedback** back to the LLM to re-plan and retry automatically:
 
 ```ts
-import { runAgent } from '@ai-native/core';
+import { runAgent } from '@ai-operable/core';
 
 const result = await runAgent(userText, {
   manifest,

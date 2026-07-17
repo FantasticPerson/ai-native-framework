@@ -1,6 +1,6 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import vue from '@vitejs/plugin-vue';
-import { aiScannerPlugin } from '@ai-native/scanner/vite';
+import { aiScannerPlugin } from '@ai-operable/scanner/vite';
 import { handleChat } from './server/chat-proxy';
 
 function chatProxyPlugin(apiKey: string | undefined): Plugin {

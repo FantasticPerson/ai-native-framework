@@ -26,12 +26,12 @@
 
 | 包 | 做什么 | 依赖 |
 |---|---|---|
-| `@ai-native/core` | 框架无关运行时：能力清单类型、LLM 输出解析与白名单校验、执行器、执行反馈闭环、provider | 无前端框架 |
-| `@ai-native/scanner` | 构建时 AST 扫描（JSX + Vue SFC）+ Vite 插件，生成 manifest | core |
-| `@ai-native/react` | React 适配器：受控组件填值、`useAIAgent` hook、`AIBar` | core |
-| `@ai-native/vue` | Vue 适配器：原生填值、`useAIAgent` composable、`AIBar` | core |
-| `@ai-native/preset-react-router` | 自动推断第一层：扫路由得模块清单 | scanner |
-| `@ai-native/preset-antd` | 自动推断第二层：扫 antd 表单得字段清单 + 运行时字段适配 | scanner |
+| `@ai-operable/core` | 框架无关运行时：能力清单类型、LLM 输出解析与白名单校验、执行器、执行反馈闭环、provider | 无前端框架 |
+| `@ai-operable/scanner` | 构建时 AST 扫描（JSX + Vue SFC）+ Vite 插件，生成 manifest | core |
+| `@ai-operable/react` | React 适配器：受控组件填值、`useAIAgent` hook、`AIBar` | core |
+| `@ai-operable/vue` | Vue 适配器：原生填值、`useAIAgent` composable、`AIBar` | core |
+| `@ai-operable/preset-react-router` | 自动推断第一层：扫路由得模块清单 | scanner |
+| `@ai-operable/preset-antd` | 自动推断第二层：扫 antd 表单得字段清单 + 运行时字段适配 | scanner |
 
 `core` 不认识任何前端框架，只认识「能力清单 + adapter 接口」。React 与 Vue 两个 adapter 并存、跑通同一套 core，即是内核真解耦的反证。
 

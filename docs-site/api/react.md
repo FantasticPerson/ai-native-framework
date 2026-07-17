@@ -1,11 +1,11 @@
-# @ai-native/react
+# @ai-operable/react
 
 React 适配器。依赖 `core`，peer 依赖 `react` / `react-router-dom`。
 
 ## useAIAgent
 
 ```tsx
-import { useAIAgent } from '@ai-native/react';
+import { useAIAgent } from '@ai-operable/react';
 
 const agent = useAIAgent({
   manifest,                  // 能力清单
@@ -30,7 +30,7 @@ const agent = useAIAgent({
 通用 AI 输入条，业务内容由 props 注入：
 
 ```tsx
-import { AIBar } from '@ai-native/react';
+import { AIBar } from '@ai-operable/react';
 
 <AIBar
   agent={agent}                       // useAIAgent 返回值
@@ -42,7 +42,7 @@ import { AIBar } from '@ai-native/react';
 ## reactSetFieldValue
 
 ```ts
-import { reactSetFieldValue } from '@ai-native/react';
+import { reactSetFieldValue } from '@ai-operable/react';
 ```
 
 给 React 受控组件填值——用原型链原生 setter 设值再派发 `input`/`change` 事件，绕过 React 的受控拦截。这是 React 特有的 hack，Vue 不需要（见 [Vue API](/api/vue)）。

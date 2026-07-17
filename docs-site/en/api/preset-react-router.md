@@ -1,11 +1,11 @@
-# @ai-native/preset-react-router
+# @ai-operable/preset-react-router
 
 Auto-inference layer 1: scans the react-router route config to get the module list. Depends on `scanner`.
 
 ## reactRouterPreset
 
 ```ts
-import { reactRouterPreset } from '@ai-native/preset-react-router';
+import { reactRouterPreset } from '@ai-operable/preset-react-router';
 
 reactRouterPreset({
   routesFile: 'src/App.tsx',           // file containing <Routes>/<Route>
@@ -22,7 +22,7 @@ Statically parses JSX-style `<Route path element>` to infer modules (skipping `<
 ## scanRoutes
 
 ```ts
-import { scanRoutes } from '@ai-native/preset-react-router';
+import { scanRoutes } from '@ai-operable/preset-react-router';
 const modules = scanRoutes(code); // RouteModule[]
 ```
 

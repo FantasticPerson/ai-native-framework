@@ -13,12 +13,12 @@
 
 ### 新增
 
-- **`@ai-native/core`**：框架无关运行时。能力清单类型（Manifest/Step/AIPlan）、`parsePlan` 白名单校验、执行器（虚拟光标演出、可中断、危险操作二次确认）、执行反馈闭环 `runAgent`（失败结构化回流 LLM 重规划、自动重试）、`LLMProvider` 抽象（`createHttpProvider` 服务端代理 + `createOpenAICompatibleProvider` 直连）、prompt 构建。零前端框架依赖。
-- **`@ai-native/scanner`**：构建时 AST 扫描。`scanSource`（JSX/TSX）+ `scanVueSource`（Vue SFC，`@vue/compiler-sfc`）+ `aggregate` 聚合 + 参数化 Vite 插件。同一扫描器同时支持 React 与 Vue。
-- **`@ai-native/react`**：React 适配器。受控组件填值（原生 setter）、`useAIAgent` hook、通用 `AIBar` 组件。
-- **`@ai-native/vue`**：Vue 适配器。原生填值、`useAIAgent` composable、`AIBar` 组件。与 React 适配器并存跑通同一套 core，反证内核框架无关。
-- **`@ai-native/preset-react-router`**：自动推断第一层。静态解析 `<Route>` 推断模块清单。
-- **`@ai-native/preset-antd`**：自动推断第二层。扫 antd `<Form.Item>` 推断字段清单（含动态 options），`/runtime` 子包提供 antd 非原生控件的运行时定位与填值。
+- **`@ai-operable/core`**：框架无关运行时。能力清单类型（Manifest/Step/AIPlan）、`parsePlan` 白名单校验、执行器（虚拟光标演出、可中断、危险操作二次确认）、执行反馈闭环 `runAgent`（失败结构化回流 LLM 重规划、自动重试）、`LLMProvider` 抽象（`createHttpProvider` 服务端代理 + `createOpenAICompatibleProvider` 直连）、prompt 构建。零前端框架依赖。
+- **`@ai-operable/scanner`**：构建时 AST 扫描。`scanSource`（JSX/TSX）+ `scanVueSource`（Vue SFC，`@vue/compiler-sfc`）+ `aggregate` 聚合 + 参数化 Vite 插件。同一扫描器同时支持 React 与 Vue。
+- **`@ai-operable/react`**：React 适配器。受控组件填值（原生 setter）、`useAIAgent` hook、通用 `AIBar` 组件。
+- **`@ai-operable/vue`**：Vue 适配器。原生填值、`useAIAgent` composable、`AIBar` 组件。与 React 适配器并存跑通同一套 core，反证内核框架无关。
+- **`@ai-operable/preset-react-router`**：自动推断第一层。静态解析 `<Route>` 推断模块清单。
+- **`@ai-operable/preset-antd`**：自动推断第二层。扫 antd `<Form.Item>` 推断字段清单（含动态 options），`/runtime` 子包提供 antd 非原生控件的运行时定位与填值。
 
 ### 安全
 

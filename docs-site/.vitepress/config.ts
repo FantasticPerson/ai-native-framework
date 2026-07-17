@@ -41,10 +41,10 @@ export default defineConfig({
             {
               text: '包 API',
               items: [
-                { text: '@ai-native/core', link: '/api/core' },
-                { text: '@ai-native/scanner', link: '/api/scanner' },
-                { text: '@ai-native/react', link: '/api/react' },
-                { text: '@ai-native/vue', link: '/api/vue' },
+                { text: '@ai-operable/core', link: '/api/core' },
+                { text: '@ai-operable/scanner', link: '/api/scanner' },
+                { text: '@ai-operable/react', link: '/api/react' },
+                { text: '@ai-operable/vue', link: '/api/vue' },
                 { text: 'preset-react-router', link: '/api/preset-react-router' },
                 { text: 'preset-antd', link: '/api/preset-antd' },
               ],
@@ -93,10 +93,10 @@ export default defineConfig({
             {
               text: 'Package API',
               items: [
-                { text: '@ai-native/core', link: '/en/api/core' },
-                { text: '@ai-native/scanner', link: '/en/api/scanner' },
-                { text: '@ai-native/react', link: '/en/api/react' },
-                { text: '@ai-native/vue', link: '/en/api/vue' },
+                { text: '@ai-operable/core', link: '/en/api/core' },
+                { text: '@ai-operable/scanner', link: '/en/api/scanner' },
+                { text: '@ai-operable/react', link: '/en/api/react' },
+                { text: '@ai-operable/vue', link: '/en/api/vue' },
                 { text: 'preset-react-router', link: '/en/api/preset-react-router' },
                 { text: 'preset-antd', link: '/en/api/preset-antd' },
               ],

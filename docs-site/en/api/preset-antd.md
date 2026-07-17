@@ -1,11 +1,11 @@
-# @ai-native/preset-antd
+# @ai-operable/preset-antd
 
 Auto-inference layer 2: scans antd `<Form.Item>` to get the field list. Depends on `scanner`. Includes both build-time scanning and runtime field adaptation (split into sub-packages with different dependency sets).
 
 ## antdPreset (build time)
 
 ```ts
-import { antdPreset } from '@ai-native/preset-antd';
+import { antdPreset } from '@ai-operable/preset-antd';
 
 antdPreset({
   forms: [
@@ -30,7 +30,7 @@ Select option sources: inline literal arrays, `<Option>` children, same-file con
 ## createAntdFieldAdapter (runtime)
 
 ```ts
-import { createAntdFieldAdapter } from '@ai-native/preset-antd/runtime';
+import { createAntdFieldAdapter } from '@ai-operable/preset-antd/runtime';
 
 const fieldAdapter = createAntdFieldAdapter();
 useAIAgent({ manifest, provider, fieldAdapter }); // passed through to react/vue's useAIAgent

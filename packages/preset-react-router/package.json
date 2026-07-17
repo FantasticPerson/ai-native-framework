@@ -1,5 +1,5 @@
 {
-  "name": "@ai-native/preset-react-router",
+  "name": "@ai-operable/preset-react-router",
   "version": "0.1.0",
   "description": "自动推断预设：从 react-router 的 <Route> 静态推断模块清单，零改动接入",
   "license": "MIT",
@@ -39,8 +39,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@ai-native/core": "workspace:*",
-    "@ai-native/scanner": "workspace:*",
+    "@ai-operable/core": "workspace:*",
+    "@ai-operable/scanner": "workspace:*",
     "@babel/parser": "^7.25.6",
     "@babel/traverse": "^7.25.6",
     "@babel/types": "^7.25.6"

@@ -10,12 +10,12 @@ RFC §7 阶段 3 的成功标准：用第二个框架跑通**同一套 core**，
 
 ## 三处改动（都不碰 core）
 
-### 1. `@ai-native/scanner` 扫 Vue SFC
+### 1. `@ai-operable/scanner` 扫 Vue SFC
 - 新增 `scanVueSource(code)`：用 `@vue/compiler-sfc` 的 `parse` 拿 `descriptor.template.ast`，遍历元素节点（type 1）读静态属性（type 6）提取 `data-ai-*`，产出与 `scanSource` 同构的 `ScanResult`。动态绑定（type 7，`:data-ai-x` / `v-bind`）对应 JSX 的非字面量，告警不采集。
 - `aggregate` 加 `scanFile(file)` 按后缀分派：`.vue → scanVueSource`，其余 → `scanSource`。分派内聚一处。
 - 新依赖 `@vue/compiler-sfc` 进 `dependencies`（vite 插件构建时调用）。与 `@babel/*` 对称——都是构建时源码解析器，不进浏览器 bundle。诚实债：纯 React 用户装 scanner 会连带它，阶段 4 发布前拆 optional peer + 动态 import。
 
-### 2. 新建 `@ai-native/vue` 包（对称 `@ai-native/react`）
+### 2. 新建 `@ai-operable/vue` 包（对称 `@ai-operable/react`）
 - `vueSetFieldValue`：直接 `el.value = value` + 派发 `input`/`change`。Vue 的 `v-model` 编译成 `:value + @input`，监听原生事件，无需 React 的原型链原生 setter hack。这个真实差异正是 adapter 必须分包、core 不该认识任何一个框架的证据。
 - `useAIAgent` composable：`ref` 管状态、`vue-router` 的 `push` 做 navigate，内部调 **core 的同一个 `runAgent`**。API 形状对齐 React 版。
 - `AIBar`：用 `defineComponent` + `h()` 渲染函数写（纯 TS），整包 tsup 单工具链构建，不引入 SFC 编译链。

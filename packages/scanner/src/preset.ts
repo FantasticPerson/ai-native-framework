@@ -1,4 +1,4 @@
-import type { ModuleDef, ManifestField, ManifestAction } from '@ai-native/core';
+import type { ModuleDef, ManifestField, ManifestAction } from '@ai-operable/core';
 
 /**
  * preset 在构建期产出的种子集合：自动推断得到的模块、字段、操作。

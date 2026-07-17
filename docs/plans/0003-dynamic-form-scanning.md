@@ -58,7 +58,7 @@
 
 ## 验证
 
-- `pnpm --filter @ai-native/preset-antd test` 新增用例 + 回归全绿。
+- `pnpm --filter @ai-operable/preset-antd test` 新增用例 + 回归全绿。
 - demo 反向验证：把 LeaveForm 的内联 options 改回「模块级常量 + `.map()`」写法（更贴近真实开发），重新构建，确认 manifest 的 `leave.type.options` 仍完整。这一步同时证明「我们之前为了迁就扫描器把 options 内联」的妥协可以取消——扫描器现在能跟上真实写法。
 - `pnpm -r build` 全量通过。
 

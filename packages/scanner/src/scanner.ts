@@ -1,7 +1,7 @@
 import { parse } from '@babel/parser';
 import _traverse from '@babel/traverse';
 import type { JSXOpeningElement, JSXAttribute } from '@babel/types';
-import type { ManifestAction, ManifestField } from '@ai-native/core';
+import type { ManifestAction, ManifestField } from '@ai-operable/core';
 import type { ScanResult } from './types';
 
 // @babel/traverse 的默认导出在 ESM 下需取 .default

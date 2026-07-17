@@ -1,11 +1,11 @@
-# @ai-native/preset-react-router
+# @ai-operable/preset-react-router
 
 自动推断第一层：扫 react-router 路由配置得到模块清单。依赖 `scanner`。
 
 ## reactRouterPreset
 
 ```ts
-import { reactRouterPreset } from '@ai-native/preset-react-router';
+import { reactRouterPreset } from '@ai-operable/preset-react-router';
 
 reactRouterPreset({
   routesFile: 'src/App.tsx',           // 含 <Routes>/<Route> 的文件
@@ -22,7 +22,7 @@ reactRouterPreset({
 ## scanRoutes
 
 ```ts
-import { scanRoutes } from '@ai-native/preset-react-router';
+import { scanRoutes } from '@ai-operable/preset-react-router';
 const modules = scanRoutes(code); // RouteModule[]
 ```
 

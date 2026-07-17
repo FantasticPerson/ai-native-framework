@@ -1,11 +1,11 @@
-# @ai-native/vue
+# @ai-operable/vue
 
 Vue 适配器。依赖 `core`，peer 依赖 `vue` / `vue-router`。API 形状与 [React 适配器](/api/react)对称，内部调 core 的**同一个** `runAgent`——这是内核框架无关的反证。
 
 ## useAIAgent
 
 ```ts
-import { useAIAgent } from '@ai-native/vue';
+import { useAIAgent } from '@ai-operable/vue';
 
 const agent = useAIAgent({
   manifest,
@@ -25,7 +25,7 @@ const agent = useAIAgent({
 
 ```vue
 <script setup lang="ts">
-import { AIBar, useAIAgent } from '@ai-native/vue';
+import { AIBar, useAIAgent } from '@ai-operable/vue';
 const agent = useAIAgent({ manifest, provider });
 const examples = ['帮我提个明天的事假'];
 </script>
@@ -40,7 +40,7 @@ const examples = ['帮我提个明天的事假'];
 ## vueSetFieldValue
 
 ```ts
-import { vueSetFieldValue } from '@ai-native/vue';
+import { vueSetFieldValue } from '@ai-operable/vue';
 ```
 
 给原生表单填值——直接写 `el.value` 再派发 `input`/`change`。Vue 的 `v-model` 在原生元素上编译成 `:value + @input`，监听原生事件，**无需 React 那套原型链 setter hack**。这个真实差异正是 adapter 必须按框架分包、而 core 不该认识任何一个框架的证据。

@@ -9,13 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ai-native/core": "workspace:*",
-    "@ai-native/vue": "workspace:*",
+    "@ai-operable/core": "workspace:*",
+    "@ai-operable/vue": "workspace:*",
     "vue": "^3.5.40",
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
-    "@ai-native/scanner": "workspace:*",
+    "@ai-operable/scanner": "workspace:*",
     "@types/node": "^20.19.43",
     "@vitejs/plugin-vue": "^5.2.1",
     "typescript": "^5.6.2",

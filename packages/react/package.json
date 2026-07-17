@@ -1,5 +1,5 @@
 {
-  "name": "@ai-native/react",
+  "name": "@ai-operable/react",
   "version": "0.1.0",
   "description": "React 适配器：受控组件填值、useAIAgent hook、AIBar 组件",
   "license": "MIT",
@@ -39,7 +39,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@ai-native/core": "workspace:*"
+    "@ai-operable/core": "workspace:*"
   },
   "peerDependencies": {
     "react": ">=18",

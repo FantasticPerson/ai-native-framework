@@ -1,4 +1,4 @@
-import type { ManifestAction, ManifestField } from '@ai-native/core';
+import type { ManifestAction, ManifestField } from '@ai-operable/core';
 
 /** 单文件扫描结果 */
 export interface ScanResult {

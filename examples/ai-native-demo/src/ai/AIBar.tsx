@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { AIBar as FrameworkAIBar, useAIAgent } from '@ai-native/react';
-import { createHttpProvider, type Manifest } from '@ai-native/core';
-import { createAntdFieldAdapter } from '@ai-native/preset-antd/runtime';
+import { AIBar as FrameworkAIBar, useAIAgent } from '@ai-operable/react';
+import { createHttpProvider, type Manifest } from '@ai-operable/core';
+import { createAntdFieldAdapter } from '@ai-operable/preset-antd/runtime';
 import manifestJson from '../ai-manifest.json';
 
 const manifest = manifestJson as Manifest;

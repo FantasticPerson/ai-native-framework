@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { AIBar as FrameworkAIBar, useAIAgent } from '@ai-native/vue';
-import { createHttpProvider, type Manifest } from '@ai-native/core';
+import { AIBar as FrameworkAIBar, useAIAgent } from '@ai-operable/vue';
+import { createHttpProvider, type Manifest } from '@ai-operable/core';
 import manifestJson from '../ai-manifest.json';
 
 const manifest = manifestJson as Manifest;

@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module';
-import type { ManifestAction, ManifestField } from '@ai-native/core';
+import type { ManifestAction, ManifestField } from '@ai-operable/core';
 import type { ScanResult } from './types';
 
 // @vue/compiler-sfc 是可选 peer 依赖：只有扫 .vue 时才需要，纯 React 项目不必安装。

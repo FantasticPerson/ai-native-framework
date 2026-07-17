@@ -1,11 +1,11 @@
-# @ai-native/vue
+# @ai-operable/vue
 
 The Vue adapter. Depends on `core`, peer-depends on `vue` / `vue-router`. The API shape is symmetric to the [React adapter](/en/api/react), and internally it calls **the same** `runAgent` in the core — this is the counter-proof that the core is framework-agnostic.
 
 ## useAIAgent
 
 ```ts
-import { useAIAgent } from '@ai-native/vue';
+import { useAIAgent } from '@ai-operable/vue';
 
 const agent = useAIAgent({
   manifest,
@@ -25,7 +25,7 @@ The only difference from the React version is framework idiom: it uses `ref` for
 
 ```vue
 <script setup lang="ts">
-import { AIBar, useAIAgent } from '@ai-native/vue';
+import { AIBar, useAIAgent } from '@ai-operable/vue';
 const agent = useAIAgent({ manifest, provider });
 const examples = ['file a personal leave for tomorrow'];
 </script>
@@ -40,7 +40,7 @@ const examples = ['file a personal leave for tomorrow'];
 ## vueSetFieldValue
 
 ```ts
-import { vueSetFieldValue } from '@ai-native/vue';
+import { vueSetFieldValue } from '@ai-operable/vue';
 ```
 
 Fills a native form control — writes `el.value` directly and dispatches `input`/`change`. Vue's `v-model` compiles to `:value + @input` on native elements, listening to native events, so it **needs none of React's prototype-chain setter hack**. This real difference is exactly the evidence that adapters must be split by framework while the core should know none of them.

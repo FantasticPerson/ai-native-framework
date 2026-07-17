@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import type { Preset, PresetContribution } from '@ai-native/scanner';
+import type { Preset, PresetContribution } from '@ai-operable/scanner';
 import { scanFormItems } from './scan-form';
 
 /** 一个 antd 表单文件及其所属模块——字段 id 会加上 module 前缀 */

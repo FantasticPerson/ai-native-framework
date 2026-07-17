@@ -1,11 +1,11 @@
-# @ai-native/scanner
+# @ai-operable/scanner
 
 Build-time AST scanning. Extracts the capability manifest from the existing code structure. Depends on `core` (types only), not on any frontend framework.
 
 ## Vite plugin (recommended)
 
 ```ts
-import { aiScannerPlugin } from '@ai-native/scanner/vite';
+import { aiScannerPlugin } from '@ai-operable/scanner/vite';
 
 aiScannerPlugin({
   modulesDir: 'src/modules',        // scan root, default 'src/modules'
@@ -20,7 +20,7 @@ Scans and generates the manifest at build (`buildStart`) and at dev startup; re-
 ## Low-level API
 
 ```ts
-import { scanSource, scanVueSource, aggregate } from '@ai-native/scanner';
+import { scanSource, scanVueSource, aggregate } from '@ai-operable/scanner';
 ```
 
 - `scanSource(code): ScanResult` — scans a single JSX/TSX source, extracting `data-ai-*` annotations.

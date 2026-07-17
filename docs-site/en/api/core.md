@@ -1,11 +1,11 @@
-# @ai-native/core
+# @ai-operable/core
 
 The framework-agnostic runtime. **It knows no frontend framework**, only "capability manifest + adapter interface".
 
 ## Capability manifest types
 
 ```ts
-import type { Manifest, ManifestModule, ManifestAction, ManifestField, Step, AIPlan } from '@ai-native/core';
+import type { Manifest, ManifestModule, ManifestAction, ManifestField, Step, AIPlan } from '@ai-operable/core';
 ```
 
 - `Manifest`: `{ generatedAt, modules: Record<string, ManifestModule> }`
@@ -18,7 +18,7 @@ import type { Manifest, ManifestModule, ManifestAction, ManifestField, Step, AIP
 ## parsePlan
 
 ```ts
-import { parsePlan } from '@ai-native/core';
+import { parsePlan } from '@ai-operable/core';
 const plan = parsePlan(rawLLMOutput, manifest); // whitelist validation, rejects out-of-manifest modules/operations
 ```
 
@@ -27,7 +27,7 @@ Validates the LLM output: only accepts modules, operations and fields within the
 ## execute / runAgent
 
 ```ts
-import { execute, runAgent } from '@ai-native/core';
+import { execute, runAgent } from '@ai-operable/core';
 ```
 
 - `execute(plan, options): Promise<ExecuteResult>` — runs one plan (virtual-cursor演出, interruptible, confirmation for dangerous operations). `ExecuteResult` has `ok`, `stoppedAt`, `reason`, `kind` (`StopKind`: `locate-failed`/`unknown-module`/`user-cancelled`).
@@ -53,7 +53,7 @@ The visible-playback interface. `domPresenter` is the built-in DOM implementatio
 ## Provider
 
 ```ts
-import { createHttpProvider, createOpenAICompatibleProvider } from '@ai-native/core';
+import { createHttpProvider, createOpenAICompatibleProvider } from '@ai-operable/core';
 ```
 
 - `createHttpProvider({ endpoint })` — for the browser, forwards to a server proxy; the key never enters the frontend.

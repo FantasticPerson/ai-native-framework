@@ -29,10 +29,10 @@ importers:
 
   examples/ai-native-demo:
     dependencies:
-      '@ai-native/core':
+      '@ai-operable/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@ai-native/react':
+      '@ai-operable/react':
         specifier: workspace:*
         version: link:../../packages/react
       antd:
@@ -57,13 +57,13 @@ importers:
         specifier: ^4.5.5
         version: 4.5.7(@types/react@18.3.31)(react@18.3.1)
     devDependencies:
-      '@ai-native/preset-antd':
+      '@ai-operable/preset-antd':
         specifier: workspace:*
         version: link:../../packages/preset-antd
-      '@ai-native/preset-react-router':
+      '@ai-operable/preset-react-router':
         specifier: workspace:*
         version: link:../../packages/preset-react-router
-      '@ai-native/scanner':
+      '@ai-operable/scanner':
         specifier: workspace:*
         version: link:../../packages/scanner
       '@types/node':
@@ -87,10 +87,10 @@ importers:
 
   examples/vue-demo:
     dependencies:
-      '@ai-native/core':
+      '@ai-operable/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@ai-native/vue':
+      '@ai-operable/vue':
         specifier: workspace:*
         version: link:../../packages/vue
       vue:
@@ -100,7 +100,7 @@ importers:
         specifier: ^4.5.0
         version: 4.6.4(vue@3.5.40(typescript@5.9.3))
     devDependencies:
-      '@ai-native/scanner':
+      '@ai-operable/scanner':
         specifier: workspace:*
         version: link:../../packages/scanner
       '@types/node':
@@ -127,10 +127,10 @@ importers:
 
   packages/preset-antd:
     dependencies:
-      '@ai-native/core':
+      '@ai-operable/core':
         specifier: workspace:*
         version: link:../core
-      '@ai-native/scanner':
+      '@ai-operable/scanner':
         specifier: workspace:*
         version: link:../scanner
       '@babel/parser':
@@ -155,10 +155,10 @@ importers:
 
   packages/preset-react-router:
     dependencies:
-      '@ai-native/core':
+      '@ai-operable/core':
         specifier: workspace:*
         version: link:../core
-      '@ai-native/scanner':
+      '@ai-operable/scanner':
         specifier: workspace:*
         version: link:../scanner
       '@babel/parser':
@@ -180,7 +180,7 @@ importers:
 
   packages/react:
     dependencies:
-      '@ai-native/core':
+      '@ai-operable/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -208,7 +208,7 @@ importers:
 
   packages/scanner:
     dependencies:
-      '@ai-native/core':
+      '@ai-operable/core':
         specifier: workspace:*
         version: link:../core
       '@babel/parser':
@@ -236,7 +236,7 @@ importers:
 
   packages/vue:
     dependencies:
-      '@ai-native/core':
+      '@ai-operable/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:

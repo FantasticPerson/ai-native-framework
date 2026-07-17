@@ -1,4 +1,4 @@
-// @ai-native/preset-antd/runtime —— 浏览器运行时字段适配器。
+// @ai-operable/preset-antd/runtime —— 浏览器运行时字段适配器。
 // 与构建时扫描（./index）分离：这里是 DOM 脏活，依赖 antd 内部结构与 class。
 //
 // 背景：antd 的 Form.Item 会按 name 自动生成 id（leave.type 的控件是 #type），
@@ -86,7 +86,7 @@ export interface AntdFieldAdapter {
 }
 
 /**
- * 创建 antd 运行时字段适配器，透传给 @ai-native/react 的 useAIAgent({ fieldAdapter })。
+ * 创建 antd 运行时字段适配器，透传给 @ai-operable/react 的 useAIAgent({ fieldAdapter })。
  * - locateField：先试 data-ai-field（手标优先），再按 antd 自动 id（#name）定位
  * - setFieldValue：原生 input 直接设值；Select/DatePicker 模拟交互
  */

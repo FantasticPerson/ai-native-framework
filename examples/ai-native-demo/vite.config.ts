@@ -1,8 +1,8 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
-import { aiScannerPlugin } from '@ai-native/scanner/vite';
-import { reactRouterPreset } from '@ai-native/preset-react-router';
-import { antdPreset } from '@ai-native/preset-antd';
+import { aiScannerPlugin } from '@ai-operable/scanner/vite';
+import { reactRouterPreset } from '@ai-operable/preset-react-router';
+import { antdPreset } from '@ai-operable/preset-antd';
 import { handleChat } from './server/chat-proxy';
 
 function chatProxyPlugin(apiKey: string | undefined): Plugin {

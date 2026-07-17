@@ -1,5 +1,5 @@
 {
-  "name": "@ai-native/core",
+  "name": "@ai-operable/core",
   "version": "0.1.0",
   "description": "框架无关的运行时：能力清单类型、LLM 输出解析与白名单校验",
   "license": "MIT",

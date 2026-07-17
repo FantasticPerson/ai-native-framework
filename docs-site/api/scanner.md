@@ -1,11 +1,11 @@
-# @ai-native/scanner
+# @ai-operable/scanner
 
 构建时 AST 扫描。从代码已有结构提取能力清单。依赖 `core`（仅类型），不依赖前端框架。
 
 ## Vite 插件（推荐）
 
 ```ts
-import { aiScannerPlugin } from '@ai-native/scanner/vite';
+import { aiScannerPlugin } from '@ai-operable/scanner/vite';
 
 aiScannerPlugin({
   modulesDir: 'src/modules',        // 扫描根目录，默认 'src/modules'
@@ -20,7 +20,7 @@ aiScannerPlugin({
 ## 底层 API
 
 ```ts
-import { scanSource, scanVueSource, aggregate } from '@ai-native/scanner';
+import { scanSource, scanVueSource, aggregate } from '@ai-operable/scanner';
 ```
 
 - `scanSource(code): ScanResult`——扫单个 JSX/TSX 源码，提取 `data-ai-*` 标注。

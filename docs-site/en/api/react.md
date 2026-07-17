@@ -1,11 +1,11 @@
-# @ai-native/react
+# @ai-operable/react
 
 The React adapter. Depends on `core`, peer-depends on `react` / `react-router-dom`.
 
 ## useAIAgent
 
 ```tsx
-import { useAIAgent } from '@ai-native/react';
+import { useAIAgent } from '@ai-operable/react';
 
 const agent = useAIAgent({
   manifest,                  // capability manifest
@@ -30,7 +30,7 @@ Internally uses `react-router-dom`'s `useNavigate` for navigation, `reactSetFiel
 A generic AI input bar; business content is injected via props:
 
 ```tsx
-import { AIBar } from '@ai-native/react';
+import { AIBar } from '@ai-operable/react';
 
 <AIBar
   agent={agent}                       // useAIAgent return value
@@ -42,7 +42,7 @@ import { AIBar } from '@ai-native/react';
 ## reactSetFieldValue
 
 ```ts
-import { reactSetFieldValue } from '@ai-native/react';
+import { reactSetFieldValue } from '@ai-operable/react';
 ```
 
 Fills a React controlled component — sets the value via the prototype-chain native setter and dispatches `input`/`change` events, bypassing React's controlled interception. This is a React-specific hack that Vue doesn't need (see [Vue API](/en/api/vue)).

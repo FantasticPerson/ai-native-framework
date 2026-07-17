@@ -11,8 +11,8 @@
     "serve": "npm run build && npm run start"
   },
   "dependencies": {
-    "@ai-native/core": "workspace:*",
-    "@ai-native/react": "workspace:*",
+    "@ai-operable/core": "workspace:*",
+    "@ai-operable/react": "workspace:*",
     "antd": "^6.5.1",
     "koa": "^3.2.1",
     "koa-static": "^5.0.0",
@@ -22,9 +22,9 @@
     "zustand": "^4.5.5"
   },
   "devDependencies": {
-    "@ai-native/preset-antd": "workspace:*",
-    "@ai-native/preset-react-router": "workspace:*",
-    "@ai-native/scanner": "workspace:*",
+    "@ai-operable/preset-antd": "workspace:*",
+    "@ai-operable/preset-react-router": "workspace:*",
+    "@ai-operable/scanner": "workspace:*",
     "@types/node": "^20.19.43",
     "@types/react": "^18.3.9",
     "@types/react-dom": "^18.3.0",

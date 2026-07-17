@@ -7,7 +7,7 @@ import {
   type ManifestAction,
   type LLMProvider,
   type Presenter,
-} from '@ai-native/core';
+} from '@ai-operable/core';
 import { reactSetFieldValue } from './adapter';
 
 export type AgentStatus = 'idle' | 'thinking' | 'executing' | 'done' | 'error';
@@ -28,7 +28,7 @@ export interface UseAIAgentOptions {
   onConfirm?: (action: ManifestAction) => boolean | Promise<boolean>;
   /**
    * 字段适配器：覆盖非原生控件的定位与填值。用于 antd 等 UI 库——
-   * 传 createAntdFieldAdapter()（来自 @ai-native/preset-antd/runtime）。
+   * 传 createAntdFieldAdapter()（来自 @ai-operable/preset-antd/runtime）。
    * 不传则用默认 data-ai-field 定位 + React 原生 setter 填值。
    */
   fieldAdapter?: {

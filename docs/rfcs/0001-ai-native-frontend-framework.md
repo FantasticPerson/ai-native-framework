@@ -119,19 +119,19 @@ ARIA 是通用可访问性语义（role、label、状态），运行时就存在
 沿用并推广当前 demo 已验证的三层解耦（业务 / 提取 / 运行，靠能力清单契约串联），拆成可独立发布的包：
 
 ```
-@ai-native/core         框架无关的运行时：解析 LLM 输出、白名单校验、执行器、虚拟光标
+@ai-operable/core         框架无关的运行时：解析 LLM 输出、白名单校验、执行器、虚拟光标
                         （从 demo 的 src/ai 抽取，剥离 React/react-router 依赖）
 
-@ai-native/scanner      构建时 AST 提取引擎 + manifest 生成 + 构建插件
+@ai-operable/scanner      构建时 AST 提取引擎 + manifest 生成 + 构建插件
                         （从 demo 的 scripts/ai-scanner 抽取、泛化）
 
-@ai-native/preset-*      各栈的提取预设：preset-react-router、preset-antd …
+@ai-operable/preset-*      各栈的提取预设：preset-react-router、preset-antd …
                         （新建，是「自动推断」的载体，也是长期维护重点）
 
-@ai-native/react        React 适配器：AIBar 组件、useAIAgent hook、与 router 的桥接
-@ai-native/vue          Vue 适配器（阶段 3 才做，用于反证内核真的解耦）
+@ai-operable/react        React 适配器：AIBar 组件、useAIAgent hook、与 router 的桥接
+@ai-operable/vue          Vue 适配器（阶段 3 才做，用于反证内核真的解耦）
 
-@ai-native/cli          脚手架、扫描调试、manifest 预览
+@ai-operable/cli          脚手架、扫描调试、manifest 预览
 ```
 
 **来源标注**：
@@ -173,7 +173,7 @@ ARIA 是通用可访问性语义（role、label、状态），运行时就存在
 | **0 · RFC** | 定位与差异化想清楚 | 本文档；能说服自己和早期读者「凭什么做」 | 立论不成立就停 |
 | **1 · React 库自用** | 从 demo 抽出可 npm 安装的 React 库 | `core`+`scanner`+`react`+`preset-react-router`；**用当前 demo 作为首个使用者**验证 API 手动标注链路跑通 | API 设计不合理 |
 | **2 · 内核去框架化 + 自动推断** | 剥离 React 依赖，落地第一层 preset | `core` 不含 React；`preset-antd` 能零改动扫出字段；LLM provider 可插拔；执行反馈闭环 | 解耦不彻底 |
-| **3 · Vue adapter 反证** | 用第二个框架证明内核真解耦 | `@ai-native/vue` 跑通同一套 core；两个 adapter 并存 | 内核仍偷偷依赖 React |
+| **3 · Vue adapter 反证** | 用第二个框架证明内核真解耦 | `@ai-operable/vue` 跑通同一套 core；两个 adapter 并存 | 内核仍偷偷依赖 React |
 | **4 · 文档站 + 治理 + 发布** | 具备开源社区门槛 | 文档站、可交互 playground、LICENSE、CONTRIBUTING、语义化版本、CI | 维护投入持续性 |
 
 **阶段间的关卡**：每阶段结束前，回看本 RFC 的定位与非目标，确认没有跑偏。**阶段 4 的公开发布是不可逆操作，届时会停下来单独确认。**
@@ -188,7 +188,7 @@ ARIA 是通用可访问性语义（role、label、状态），运行时就存在
 2. **执行反馈闭环的设计**：执行失败后如何把结果回流给 LLM 重规划？多轮对话如何管理状态？（阶段 2）
 3. **动态表单/条件渲染**：字段随交互出现，静态扫描看不到，如何与运行时提取协同？（阶段 2）
 4. **安全模型**：AI 能执行的操作是否需要权限分级？危险操作（删除、提交）是否需要二次确认？（阶段 1 就要有基本设计）
-5. **命名与品牌**：~~`@ai-native/*` 是占位，正式名称待定。~~ **已定（阶段 4）**：正式 scope 定为 `@ai-native`。理由——npm 上整个 `@ai-native` scope 完全可用（core/scanner/react/vue/preset-* 全部未被占用），语义精准，且已贯穿 6 包 + 2 demo + 全部文档，转正零返工。另起新名要批量改却无收益。
+5. **命名与品牌**：~~`@ai-native/*` 是占位，正式名称待定。~~ **已定（阶段 4）**：正式 scope 定为 `@ai-native`。理由——npm 上整个 `@ai-native` scope 完全可用（core/scanner/react/vue/preset-* 全部未被占用），语义精准，且已贯穿 6 包 + 2 demo + 全部文档，转正零返工。另起新名要批量改却无收益。**更正（阶段 4 发布时）**：真正发布时发现 `@ai-native` 的 npm org 已被他人注册、当前账号无发布权（此前只验证过包名未被占用，未验证 scope 的发布权限），故正式 scope 改为 **`@ai-operable`**（对应已创建的 npm org），6 包 + 2 demo + 全部文档随之更新。教训：scope 可用性 = 名字未占用 **且** 有发布权，二者都要在发布前验证。
 
 ---
 
