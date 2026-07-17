@@ -1,7 +1,27 @@
 {
   "name": "@ai-native/preset-antd",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "自动推断预设：从 antd <Form.Item> 静态推断字段清单（名称/标签/类型/选项）",
+  "license": "MIT",
+  "author": "FantasticPerson",
+  "homepage": "https://github.com/FantasticPerson/ai-native-framework#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FantasticPerson/ai-native-framework.git",
+    "directory": "packages/preset-antd"
+  },
+  "bugs": {
+    "url": "https://github.com/FantasticPerson/ai-native-framework/issues"
+  },
+  "keywords": [
+    "ai",
+    "ai-native",
+    "llm",
+    "agent",
+    "antd",
+    "preset",
+    "form"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -34,5 +54,9 @@
     "@types/babel__traverse": "^7.28.0",
     "@types/node": "^20.19.43",
     "jsdom": "^29.1.1"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
   }
 }

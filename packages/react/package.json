@@ -1,7 +1,26 @@
 {
   "name": "@ai-native/react",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "React 适配器：受控组件填值、useAIAgent hook、AIBar 组件",
+  "license": "MIT",
+  "author": "FantasticPerson",
+  "homepage": "https://github.com/FantasticPerson/ai-native-framework#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FantasticPerson/ai-native-framework.git",
+    "directory": "packages/react"
+  },
+  "bugs": {
+    "url": "https://github.com/FantasticPerson/ai-native-framework/issues"
+  },
+  "keywords": [
+    "ai",
+    "ai-native",
+    "llm",
+    "agent",
+    "react",
+    "hooks"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -34,5 +53,9 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.18.1"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
   }
 }

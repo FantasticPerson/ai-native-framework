@@ -4,7 +4,7 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 
 ## 当前阶段
 
-阶段 0（RFC）已完成，阶段 1（React 库自用）已完成，阶段 2（core 去框架化 + 执行闭环）已完成，**阶段 3（Vue adapter 反证解耦）已完成**——core 未改一行即跑通第二个框架。下一步阶段 4：文档站 + 治理 + 公开发布（发布是红线，届时确认）。
+阶段 0（RFC）已完成，阶段 1（React 库自用）已完成，阶段 2（core 去框架化 + 执行闭环）已完成，阶段 3（Vue adapter 反证解耦）已完成，**阶段 4 发布前准备已完成**（命名转正 + 治理文件 + CI + 文档站 + 包 publish 元数据）。**尚未 npm publish / 正式 release——发布是红线，全部就绪后单独确认再执行。**
 
 ## 已完成（已验证）
 
@@ -27,10 +27,11 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 - **动态表单扫描——解析变量引用的 Select options（阶段 2 收尾）**：实测确认四类「动态」场景（探测见 `docs/plans/0003-dynamic-form-scanning.md`）——条件渲染字段 babel 已扫到、循环生成字段（name 非字面量）是物理边界、唯一值得补的是「options 引用同文件常量」这一最常见写法（之前只认内联字面量数组，引用常量/`.map()` 则 options 丢失）。`scanFormItems` 现先遍历顶层 `const NAME = [...]` 建符号表，`readSelectOptions` 支持 `options={IDENT}`、`options={IDENT.map(...)}`、`options={[...].map(...)}`，`.map` 变换忽略（数组项即 value 源）。抽 `arrayExprToStrings` 纯函数去重复。诚实边界：跨文件 import 的常量、API/state 驱动的 options 不解析。scan-form 10→15 用例。demo 反向验证：LeaveForm 的 options 改回真实开发写法（模块级 `LEAVE_TYPES` 常量 + `.map()`），manifest 的 `leave.type.options` 仍完整——扫描器能跟上真实写法，此前为迁就扫描器把 options 内联的妥协可取消。core 35 + react 2 + scanner 20 + preset-react-router 10 + preset-antd 28 = **95 单测通过**，全量构建通过。
 - **LLM provider 多实现（阶段 2 收尾）**：`LLMProvider` 本就是纯函数类型（用户可传任意实现），补一个官方直连参考实现证明抽象可插拔，而非堆砌 SDK 包装。新增 `createOpenAICompatibleProvider`——直连 OpenAI 兼容的 `/chat/completions`（DeepSeek / OpenAI / Moonshot / 通义等同一套协议），system 作首条 message、强制 `response_format=json_object`、`temperature=0`，取 `choices[0].message.content`。安全边界写进代码注释：此实现携带 apiKey，仅用于可安全持有 key 的环境（Node/CLI/MCP），浏览器仍走 `createHttpProvider` + 服务端代理（key 不进 bundle 是红线）。provider 2→5 用例，共 **98 单测通过**，全量构建通过。
 - **Vue adapter 反证 core 解耦（阶段 3，`@ai-native/vue` + `examples/vue-demo`）**：用第二个框架跑通同一套 core，把「core 框架无关」从自证（源码零 React import）升级为反证。硬判据：**全程不改 `packages/core` 一行**，落地后 `git diff packages/core` 为空即成立。设计见 `docs/plans/0004-vue-adapter-decoupling.md`。三处改动都不碰 core：① scanner 加 `scanVueSource`（`@vue/compiler-sfc` 解析 `<template>` AST 提取 `data-ai-*`，与 `scanSource` 产出同构 `ScanResult`；动态绑定 `:data-ai-x` 告警不采集），`aggregate` 按 `.vue` 后缀分派——同一扫描器同时喂 React/Vue，证明扫描链框架无关；② 新建 `@ai-native/vue`：`vueSetFieldValue`（直接写 `el.value` 派发 `input`，Vue 的 `v-model` 监听原生事件，无需 React 原型链 setter hack——这个真实差异正是 adapter 必须分包的证据）、`useAIAgent` composable（`ref` 管状态 + `vue-router` 的 `push` 做 navigate，内部调 core 同一个 `runAgent`）、`AIBar`（`defineComponent` + `h()` 渲染函数写，纯 TS 单工具链，不引 SFC 编译链）；③ 新建 `examples/vue-demo`（vite + plugin-vue + vue-router，2 个原生表单 SFC，`aiScannerPlugin({extensions:['.vue']})` 扫出正确 manifest 含 select options，chat-proxy 与 React demo 逐字一致）。core 35 + react 2 + **vue 4** + scanner 34（+14 Vue） + preset-react-router 10 + preset-antd 28 = **113 单测通过**，6 包 + 2 demo 全量构建通过，**`git diff packages/core` 为空——反证成立**。浏览器人工验收已通过（DeepSeek key，Vue demo 逐条跑通切页 / 原生 select 与 input 填值 / 提交 + 光标演出）。
+- **阶段 4 发布前准备（治理 + 文档站 + 发布元数据）**：为开源社区门槛做准备，设计见 `docs/plans/0005-phase4-pre-release.md`。**不含 npm publish / release（红线，单独确认）**。① 命名转正：`@ai-native` 定为正式 scope（查证 npm 整个 scope 可用 + 语义精准 + 零返工，RFC 附录 A 第 5 条已记）；② 包 publish 元数据：6 包补 `license`(MIT)/`author`(FantasticPerson)/`repository`(+directory)/`homepage`/`bugs`/`keywords`/`publishConfig:{access:public}`/`sideEffects:false`，版本 `0.0.0→0.1.0`；③ 治理文件：`LICENSE`(MIT)、`CONTRIBUTING.md`（开发环境 + 架构原则「core 不认框架」+ 提交规范 + PR 流程）、`CHANGELOG.md`（0.1.0 记阶段 1-3 能力）、根 `README.md`（主张 + 核心洞察 + 接入光谱 + 包一览 + 快速开始）；④ CI：`.github/workflows/ci.yml`（push/PR to main，pnpm install→build→test→docs build，Node 18/20 矩阵，无 publish job）；⑤ VitePress 文档站 `docs-site/`（纳入 workspace）：首页 + 指南（为什么做 / 快速开始 / 接入光谱 / 执行反馈闭环 / 安全模型）+ 6 包 API 参考 + 交互 Playground（预置 manifest + mock provider，不接真实 LLM，避免 key 与红线）。全量：build 9 target（含 docs-site）通过，116 单测通过，`vitepress build` 通过。
 
 ## 进行中
 
-- 无。阶段 1/2/3 全部达成。**阶段 3 成功标准达成**：第二个框架（Vue）跑通同一套 core，两个 adapter（react/vue）并存，`git diff packages/core` 为空——内核未偷偷依赖 React。下一步阶段 4（文档站 + 治理 + 公开发布，发布是红线）。
+- 无。阶段 1/2/3/4 全部准备就绪。**阶段 4 发布前准备已完成**（命名 + 治理 + CI + 文档站 + 发布元数据），只差最后一步公开发布。**公开发布（npm publish + release tag）是红线**，需主人单独确认后执行。
 
 ## 待办（阶段 1：React 库自用）
 
@@ -60,7 +61,11 @@ AI-Native 前端框架的真实进度源。完整战略见 `docs/rfcs/0001-ai-na
 ## 后续阶段（详见 RFC §7）
 
 - ~~阶段 3：Vue adapter 反证解耦~~ ✅ 已完成（见「已完成」）
-- 阶段 4：文档站 + 治理 + 公开发布（**发布是红线，届时确认**）
+- 阶段 4：文档站 + 治理 + 公开发布——**发布前准备已完成**，剩公开发布（红线）：
+  - [ ] `npm publish`（6 包，`0.1.0`，需主人确认；scoped 包已配 `publishConfig.access=public`）
+  - [ ] 打 release tag `v0.1.0` + GitHub Release
+  - [ ] 文档站部署（Cloudflare Pages / GitHub Pages，涉外部操作，单独确认）
+  - [ ] 发布前技术债：`@vue/compiler-sfc` 拆为 optional peer + 动态 import（见「技术债」）
 
 ## 开放问题（RFC 附录 A）
 

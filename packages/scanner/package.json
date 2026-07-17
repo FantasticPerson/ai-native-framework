@@ -1,7 +1,27 @@
 {
   "name": "@ai-native/scanner",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "构建时 AST 扫描：从 data-ai-* 标注提取能力清单（manifest）",
+  "license": "MIT",
+  "author": "FantasticPerson",
+  "homepage": "https://github.com/FantasticPerson/ai-native-framework#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FantasticPerson/ai-native-framework.git",
+    "directory": "packages/scanner"
+  },
+  "bugs": {
+    "url": "https://github.com/FantasticPerson/ai-native-framework/issues"
+  },
+  "keywords": [
+    "ai",
+    "ai-native",
+    "llm",
+    "agent",
+    "ast",
+    "vite-plugin",
+    "scanner"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -42,5 +62,9 @@
     "@types/babel__traverse": "^7.28.0",
     "@types/node": "^20.19.43",
     "vite": "^5.4.8"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
   }
 }
